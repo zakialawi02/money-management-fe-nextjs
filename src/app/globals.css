@@ -97,6 +97,25 @@
     @apply font-heading;
   }
 
+  /* Custom scrollbar for neobrutalism */
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--background);
+    border: 2px solid var(--foreground);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--foreground);
+    border: 2px solid var(--background);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-background);
+  }
+
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;

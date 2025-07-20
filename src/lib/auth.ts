@@ -189,3 +189,11 @@ export async function logoutAction() {
 
   return { success: true };
 }
+
+export async function getLoginStatus() {
+  const token = (await cookies()).get("authToken")?.value;
+  // const tokenValidFlag = (await cookies()).get("tokenValid")?.value;
+
+  // Di sini bisa juga kamu validasi token via backend Laravel
+  return !!token;
+}

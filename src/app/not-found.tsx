@@ -1,16 +1,10 @@
-"use client";
-
-import { AlertTriangle, ArrowLeft, Home } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { AlertTriangle } from "lucide-react";
 
 interface ErrorPageProps {
   status?: 503 | 500 | 404 | 403;
 }
 
 export default function NotFound({ status = 404 }: ErrorPageProps) {
-  const router = useRouter();
-
   const title = {
     503: "503: Service Unavailable",
     500: "500: Server Error",
@@ -26,19 +20,17 @@ export default function NotFound({ status = 404 }: ErrorPageProps) {
   }[status];
 
   return (
-    <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background p-4 text-center">
-      <div className="mx-auto flex max-w-md flex-col items-center space-y-6 text-center">
-        <div className="rounded-full bg-muted p-6">
-          <AlertTriangle className="h-12 w-12 text-muted-foreground" />
+    <div className="flex min-h-screen flex-col items-center justify-center bg-main p-6 text-black font-sans">
+      <div className="bg-white border-4 border-black p-8 rounded-md max-w-md w-full text-center space-y-6 shadow-none">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-warning border-4 border-black rounded-full">
+          <AlertTriangle className="h-10 w-10 text-black" />
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+          <h1 className="text-4xl font-extrabold tracking-tight leading-tight">
             {title}
           </h1>
-          <p className="mx-auto max-w-[500px] text-muted-foreground md:text-xl/relaxed">
-            {description}
-          </p>
+          <p className="text-lg text-gray-800">{description}</p>
         </div>
       </div>
     </div>
