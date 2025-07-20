@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { useActionState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { loginAction } from "@/lib/auth";
 import { InitialState } from "@/types/auth.types";
 import { toast } from "sonner";
@@ -33,13 +33,9 @@ export default function LoginPage() {
     loginAction,
     initialState
   );
-  const router = useRouter();
-
-  useEffect(() => {
-    if (state?.success) {
-      router.push("/");
-    }
-  }, [state, router]);
+  if (state?.success) {
+    redirect("/");
+  }
 
   useEffect(() => {
     if (state?.success === true) {

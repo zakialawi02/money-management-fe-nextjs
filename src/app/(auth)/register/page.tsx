@@ -15,7 +15,7 @@ import { Label } from "@radix-ui/react-label";
 import { InitialState } from "@/types/auth.types";
 import { useActionState, useEffect } from "react";
 import { registerAction } from "@/lib/auth";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { toast } from "sonner";
 
 const initialState: InitialState = {
@@ -35,15 +35,12 @@ export default function RegisterPage() {
     registerAction,
     initialState
   );
-  const router = useRouter();
 
-  useEffect(() => {
-    if (state?.success) {
-      setTimeout(() => {
-        router.push("/login");
-      }, 1000);
-    }
-  }, [state, router]);
+  if (state?.success) {
+    setTimeout(() => {
+      redirect("/login");
+    }, 1000);
+  }
 
   useEffect(() => {
     if (state?.success === true) {

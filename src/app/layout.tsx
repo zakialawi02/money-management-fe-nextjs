@@ -5,7 +5,6 @@ import NextTopLoader from "nextjs-toploader";
 import { ThemeProvider } from "next-themes";
 import { NavbarMain } from "@/components/navbar-main";
 import { Suspense } from "react";
-import { AuthProvider } from "@/contexts/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,15 +40,13 @@ export default function RootLayout({
           <NextTopLoader showSpinner={false} />
           <Suspense
             fallback={
-              <div className="fixed inset-0 z-10 grid place-items-center text-red-600">
+              <div className="fixed inset-0 z-10 grid place-items-center text-green-600">
                 Loading...
               </div>
             }
           >
-            <AuthProvider>
-              <NavbarMain />
-              {children}
-            </AuthProvider>
+            <NavbarMain />
+            {children}
           </Suspense>
         </ThemeProvider>
       </body>

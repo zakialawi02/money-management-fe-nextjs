@@ -1,6 +1,6 @@
 "use server";
 
-import { AuthResponse, InitialState, UserData } from "@/types/auth.types";
+import { InitialState } from "@/types/auth.types";
 import { cookies } from "next/headers";
 
 const API_BASE_URL = process.env.API_URL ?? "http://127.0.0.1:8000";
@@ -30,20 +30,23 @@ export async function loginAction(
       body: JSON.stringify(data),
     });
 
-    const result: AuthResponse = await response.json();
+    const result = await response.json();
 
     if (result.success && result.token) {
       // Store token in cookie
-      (await cookies()).set("auth-token", result.token, {
+      (await cookies()).set("authToken", result.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         maxAge: 7 * 24 * 60 * 60, // 7 days
         path: "/",
       });
-
+      (await cookies()).set("tokenValid", "true", {
+        maxAge: 60 * 60, // 1 hour
+        path: "/",
+      });
       // Store user data in cookie (for client access)
-      (await cookies()).set("user-data", JSON.stringify(result.data), {
+      (await cookies()).set("userData", JSON.stringify(result.data), {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
@@ -111,21 +114,41 @@ export async function registerAction(
       body: JSON.stringify(data),
     });
 
-    const result: AuthResponse = await response.json();
+    const result = await response.json();
 
     if (result.success) {
+      (await cookies()).set("authToken", result.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60, // 7 days
+        path: "/",
+      });
+      (await cookies()).set("tokenValid", "true", {
+        maxAge: 60 * 60,
+        path: "/",
+      });
+      // Store user data in cookie (for client access)
+      (await cookies()).set("userData", JSON.stringify(result.data), {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60, // 7 days
+        path: "/",
+      });
+
       return {
+        data,
         success: true,
-        message: "Account created successfully! Please login.",
+        message: result.message || "Registration successful",
+      };
+    } else {
+      return {
+        success: false,
+        message: result.message || "Registration failed",
+        errors: result.errors,
       };
     }
-
-    return {
-      data,
-      success: false,
-      message: result.message || "Registration failed",
-      errors: result.errors,
-    };
   } catch (error) {
     console.error(error);
     return {
@@ -135,47 +158,34 @@ export async function registerAction(
   }
 }
 
-export async function getStoredUserData(): Promise<UserData | null> {
-  const authToken = (await cookies()).get("auth-token")?.value;
-  const userDataRaw = (await cookies()).get("user-data")?.value;
-
-  if (!authToken || !userDataRaw) return null;
-
+export async function isTokenValid(token: string): Promise<boolean> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authToken}`,
-      },
+    const res = await fetch("http://localhost:8000/api/v1/", {
+      headers: { Authorization: `Bearer ${token}` },
     });
 
-    if (!response.ok) {
-      console.warn("Invalid token or failed verification");
-      return null;
-    }
-
-    const userData: UserData = JSON.parse(userDataRaw);
-    return userData;
-  } catch (error) {
-    console.error("Failed to fetch or parse user data:", error);
-    return null;
+    const data = await res.json();
+    return res.ok && data.success;
+  } catch (e) {
+    console.error("Token validation error:", e);
+    return false;
   }
 }
 
-export async function logoutAction(): Promise<void> {
+export async function logoutAction() {
   try {
-    await fetch("/api/auth/logout", {
+    const token = (await cookies()).get("authToken")?.value;
+    await fetch(`${API_BASE_URL}/api/auth/logout`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
+    (await cookies()).delete("authToken");
+    (await cookies()).delete("tokenValid");
+    (await cookies()).delete("userData");
   } catch (e) {
     console.error("Failed to call server logout:", e);
+    return { success: false };
   }
 
-  (await cookies()).delete("auth-token");
-  (await cookies()).delete("user-data");
-  return;
+  return { success: true };
 }

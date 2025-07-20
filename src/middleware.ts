@@ -1,54 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getStoredUserData } from "./lib/auth";
+import { isTokenValid } from "@/lib/auth";
 
 export async function middleware(req: NextRequest) {
-  const token = req.cookies.get("auth-token")?.value;
+  const token = req.cookies.get("authToken")?.value;
+  const tokenValidFlag = req.cookies.get("tokenValid")?.value;
   const pathname = req.nextUrl.pathname;
 
-  const isProtectedRoute = ["/dashboard"].some((route) =>
-    pathname.startsWith(route)
-  );
+  const isAuthPage = ["/login", "/register"].includes(pathname);
+  const isProtectedPage = [
+    "/",
+    "/dashboard",
+    "/dashboard/profile",
+    "/dashboard/settings",
+  ].some((p) => pathname.startsWith(p));
 
-  const isAuthRoute = pathname === "/login" || pathname === "/register";
-
-  // 🚫 If the route is protected and there is no token, redirect to login
-  if (isProtectedRoute) {
-    if (!token) {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
-
-    try {
-      getStoredUserData().then((user) => {
-        if (!user) {
-          return NextResponse.redirect(new URL("/login", req.url));
-        }
-      });
-    } catch (e) {
-      console.error("Failed to verify token:", e);
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
+  // Not logged in, accessing protected route
+  if (!token && isProtectedPage && !isAuthPage) {
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // ✅ If the route is auth and there is a token, redirect to dashboard
-  if (isAuthRoute && token) {
-    try {
-      const res = await fetch(
-        `${process.env.API_URL ?? "http://127.0.0.1:8000"}/api/v1/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (res.ok) {
-        return NextResponse.redirect(new URL("/", req.url));
-      }
-    } catch (e) {
-      // Do nothing
-      console.error("Failed to verify token:", e);
+  // Already logged in → validate token in backend
+  if (token && isProtectedPage && !tokenValidFlag) {
+    const valid = await isTokenValid(token);
+    if (!valid) {
+      const response = NextResponse.redirect(new URL("/login", req.url));
+      response.cookies.delete("authToken");
+      response.cookies.delete("tokenValid");
+      return response;
     }
+
+    // Token valid → set tokenValid cookie (cache 10 menit)
+    const response = NextResponse.next();
+    response.cookies.set("tokenValid", "true", { maxAge: 60 * 60 });
+    return response;
+  }
+
+  // Already logged in & accessing login/register → redirect to /
+  if (token && isAuthPage) {
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   return NextResponse.next();
 }
+
+export const config = {
+  matcher: ["/", "/dashboard/:path*", "/login", "/register"],
+};

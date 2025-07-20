@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ModeToggle } from "./mode-toggle";
+import { Skeleton } from "./ui/skeleton";
 import { logoutAction } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 
@@ -22,6 +23,9 @@ export function NavbarMain() {
         </h1>
         <div>
           <ul className="flex items-center space-x-6">
+            <li>
+              <Link href="/dashboard">Dashboard</Link>
+            </li>
             <li>
               <button onClick={handleLogout}>Logout</button>
             </li>
