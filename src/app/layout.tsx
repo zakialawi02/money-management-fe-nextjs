@@ -3,8 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NextTopLoader from "nextjs-toploader";
 import { ThemeProvider } from "next-themes";
-import { NavbarMain } from "@/components/navbar-main";
 import { Suspense } from "react";
+import Loading from "./loading";
+import { NavbarMain } from "@/components/navbar-main";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,16 +39,8 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <NextTopLoader showSpinner={false} />
-          <Suspense
-            fallback={
-              <div className="fixed inset-0 z-10 grid place-items-center text-green-600">
-                Loading...
-              </div>
-            }
-          >
-            <NavbarMain />
-            {children}
-          </Suspense>
+          <NavbarMain />
+          <Suspense fallback={Loading()}>{children}</Suspense>
         </ThemeProvider>
       </body>
     </html>

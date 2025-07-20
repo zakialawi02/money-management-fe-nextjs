@@ -114,6 +114,7 @@
 
   ::-webkit-scrollbar-thumb:hover {
     background: var(--secondary-background);
+    border: 2px solid var(--foreground);
   }
 
   button:not(:disabled),
