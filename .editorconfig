@@ -1,0 +1,34 @@
+# top-most EditorConfig file
+root = true
+
+# Default settings for all files
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+
+# Make Markdown files readable (no trimming of whitespace)
+[*.md]
+trim_trailing_whitespace = false
+
+# JSON and YAML files usually follow 2-space indent
+[*.{json,yml,yaml}]
+indent_size = 2
+
+# TypeScript, JavaScript, JSX, and TSX files
+[*.{js,jsx,ts,tsx}]
+indent_style = space
+indent_size = 2
+
+# HTML, CSS, and SCSS
+[*.{html,css,scss}]
+indent_style = space
+indent_size = 2
+
+# Ignore lockfiles for trimming
+[package-lock.json]
+insert_final_newline = false
+trim_trailing_whitespace = false
