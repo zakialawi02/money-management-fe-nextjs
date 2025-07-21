@@ -1,5 +1,3 @@
-"use client";
-
 import { getTransactionCategories, storeTransactionAction } from "@/app/action";
 import SelectCategoryTransaction from "./select-category-transaction";
 import { Input } from "./ui/input";
@@ -34,7 +32,12 @@ const initialState = {
   errors: null,
 };
 
-export default function FormTransaction({ accountId }: { accountId?: string }) {
+type Props = {
+  accountId?: string;
+  onSuccess?: () => void; // Added onSuccess prop
+};
+
+export default function FormTransaction({ accountId, onSuccess }: Props) {
   const [allCategories, setAllCategories] = useState<TransactionCategory[]>([]);
   const [filteredCategories, setFilteredCategories] = useState<
     TransactionCategory[]
@@ -73,10 +76,11 @@ export default function FormTransaction({ accountId }: { accountId?: string }) {
   useEffect(() => {
     if (state.success === true) {
       toast.success("Transaction successfully created");
+      onSuccess?.(); // Call onSuccess callback
     } else if (state.success === false) {
       toast.error(state.message || "Failed to create transaction");
     }
-  }, [state]);
+  }, [state, onSuccess]);
 
   return (
     <>

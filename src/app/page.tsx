@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { deleteTransactionAction, getAccount, getTransactions } from "./action";
 import DropdownAccount from "@/components/dropdown-account";
@@ -25,6 +25,24 @@ export default function HomePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  const fetchTransactions = useCallback(async () => {
+    setLoadingTransactions(true);
+    if (!selectedAccountId) {
+      setLoadingTransactions(false);
+      return;
+    }
+
+    const now = new Date();
+    const dateParam =
+      searchParams.get("date") ??
+      `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+    const txResult = await getTransactions(selectedAccountId, dateParam);
+
+    setTransactionsData(txResult.data ?? []);
+    setLoadingTransactions(false);
+  }, [selectedAccountId, searchParams]);
+
   const handleDeleteTransaction = async (id: string) => {
     const res = await deleteTransactionAction(id);
     if (res.success) {
@@ -35,6 +53,10 @@ export default function HomePage() {
       toast.error(res.message);
     }
   };
+
+  const handleTransactionFormSuccess = useCallback(() => {
+    fetchTransactions();
+  }, [fetchTransactions]); // Dependency on fetchTransactions is necessary here
 
   // Fetch account data when the page is first loaded
   useEffect(() => {
@@ -61,24 +83,10 @@ export default function HomePage() {
     fetchAccounts();
   }, [router, searchParams]);
 
-  // Fetch transactions when account changes
+  // Fetch transactions when account changes or search params change
   useEffect(() => {
-    const fetchTx = async () => {
-      setLoadingTransactions(true);
-      if (!selectedAccountId) return;
-
-      const now = new Date();
-      const dateParam =
-        searchParams.get("date") ??
-        `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-
-      const txResult = await getTransactions(selectedAccountId, dateParam);
-
-      setTransactionsData(txResult.data ?? []);
-    };
-
-    fetchTx().finally(() => setLoadingTransactions(false));
-  }, [selectedAccountId, searchParams]);
+    fetchTransactions();
+  }, [selectedAccountId, searchParams, fetchTransactions]);
 
   const handleAccountChange = (id: string) => {
     setSelectedAccountId(id);
@@ -128,7 +136,10 @@ export default function HomePage() {
         <Card className="w-full">
           <CardContent>
             <Skeleton className="h-10 mb-2 w-full" />
-            <FormTransaction accountId={selectedAccountId} />
+            <FormTransaction
+              accountId={selectedAccountId}
+              onSuccess={handleTransactionFormSuccess}
+            />
           </CardContent>
         </Card>
       </div>
