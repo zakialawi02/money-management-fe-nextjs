@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import { Suspense } from "react";
 import Loading from "./loading";
 import { NavbarMain } from "@/components/navbar-main";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,7 +41,10 @@ export default function RootLayout({
         >
           <NextTopLoader showSpinner={false} />
           <NavbarMain />
-          <Suspense fallback={Loading()}>{children}</Suspense>
+          <Suspense fallback={Loading()}>
+            {children}
+            <Toaster position="top-center" richColors closeButton />
+          </Suspense>
         </ThemeProvider>
       </body>
     </html>

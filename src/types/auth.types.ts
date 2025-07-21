@@ -1,6 +1,6 @@
 export type InitialState<T = Record<string, string>> = {
   data?: T;
-  message: string;
+  message?: string;
   success: boolean | null;
   errors?: Record<string, string[]> | null;
 };
@@ -37,4 +37,38 @@ export interface AuthResponse {
   token_type?: string;
   data?: UserData;
   errors?: Record<string, string[]> | null;
+}
+
+export interface Account {
+  id: string;
+  name: string;
+  description: string | null;
+  balance: number;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string | null;
+  users?: UserData[];
+}
+
+export interface TransactionCategory {
+  id: string;
+  name: string;
+  description: string | null;
+  color?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Transaction {
+  id: string;
+  date: string;
+  type: string;
+  amount: number;
+  description: string | null;
+  account_id: string;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string | null;
+  transactions_category_id?: string;
+  category?: TransactionCategory;
 }

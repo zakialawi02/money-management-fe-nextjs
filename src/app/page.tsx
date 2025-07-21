@@ -4,23 +4,39 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getAccount } from "./action";
-
-interface Account {
-  id: string;
-  name: string;
-  balance: number;
-  description: string | null;
-}
+import { deleteTransactionAction, getAccount, getTransactions } from "./action";
+import DropdownAccount from "@/components/dropdown-account";
+import { Account, Transaction } from "@/types/auth.types";
+import TableTransactions from "@/components/table-transactions";
+import FormTransaction from "@/components/form-transaction";
+import ButtonShareStream from "@/components/button-share-stream";
+import { getCurrentDate } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function HomePage() {
   const [loadingAccount, setLoadingAccount] = useState(true);
-  const [loading, setLoading] = useState(true);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccountId, setSelectedAccountId] = useState("");
+  const [selectedDate, setSelectedDate] = useState(() =>
+    getCurrentDate("month")
+  );
+  const [transactionsData, setTransactionsData] = useState<Transaction[]>([]);
+  const [loadingTransactions, setLoadingTransactions] = useState(true);
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  const handleDeleteTransaction = async (id: string) => {
+    const res = await deleteTransactionAction(id);
+    if (res.success) {
+      toast.success("Transaction deleted successfully");
+      // refresh data
+      setTransactionsData((prev) => prev.filter((tx) => tx.id !== id));
+    } else {
+      toast.error(res.message);
+    }
+  };
+
+  // Fetch account data when the page is first loaded
   useEffect(() => {
     const fetchAccounts = async () => {
       const res = await getAccount();
@@ -45,43 +61,65 @@ export default function HomePage() {
     fetchAccounts();
   }, [router, searchParams]);
 
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = e.target.value;
-    setSelectedAccountId(selectedId);
+  // Fetch transactions when account changes
+  useEffect(() => {
+    const fetchTx = async () => {
+      setLoadingTransactions(true);
+      if (!selectedAccountId) return;
 
+      const now = new Date();
+      const dateParam =
+        searchParams.get("date") ??
+        `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+      const txResult = await getTransactions(selectedAccountId, dateParam);
+
+      setTransactionsData(txResult.data ?? []);
+    };
+
+    fetchTx().finally(() => setLoadingTransactions(false));
+  }, [selectedAccountId, searchParams]);
+
+  const handleAccountChange = (id: string) => {
+    setSelectedAccountId(id);
     const newParams = new URLSearchParams(searchParams.toString());
-    newParams.set("accountId", selectedId);
+    newParams.set("accountId", id);
     router.replace(`?${newParams.toString()}`);
   };
 
   return (
-    <div className="w-full max-w-[90rem] mx-auto py-5">
-      <div className="flex items-center justify-center mb-5">
+    <div className="w-full max-w-[90rem] mx-auto py-3">
+      <div className="flex items-center justify-center">
         <h1 className="text-center text-3xl">Pocket</h1>
       </div>
 
-      <div className="mx-auto mb-3 md:w-96 border-2 p-3 rounded-md">
+      <div className="mx-auto mb-3 md:w-96 p-3 rounded-md">
         {loadingAccount ? (
-          <Skeleton className="h-30 w-full" />
+          <Skeleton className="h-20 w-full" />
         ) : (
-          <select
-            value={selectedAccountId}
-            onChange={handleSelectChange}
-            className="w-full border px-4 py-2 rounded"
-          >
-            {accounts.map((account) => (
-              <option key={account.id} value={account.id}>
-                {account.name} - Rp{account.balance.toLocaleString()}
-              </option>
-            ))}
-          </select>
+          <DropdownAccount
+            data={accounts}
+            selectedId={selectedAccountId}
+            onChange={handleAccountChange}
+          />
         )}
+        <div className="mt-3 flex justify-center">
+          {loadingAccount ? (
+            <Skeleton className="h-10 w-full" />
+          ) : (
+            <ButtonShareStream
+              userId="1"
+              accountId={selectedAccountId}
+              date={selectedDate}
+            />
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 px-4 md:px-2 gap-4 mb-5">
         <Card className="w-full">
           <CardContent>
-            {loading && <Skeleton className="h-10 w-full" />}
+            <Skeleton className="h-10 w-full" />
             <div className="flex flex-col gap-6">
               <h2>Welcome</h2>
             </div>
@@ -89,20 +127,8 @@ export default function HomePage() {
         </Card>
         <Card className="w-full">
           <CardContent>
-            {loading && (
-              <>
-                <Skeleton className="h-10 mb-2 w-full" />
-                <Skeleton className="h-10 mb-2 w-full" />
-                <Skeleton className="h-10 mb-2 w-full" />
-                <Skeleton className="h-10 mb-2 w-full" />
-                <Skeleton className="h-10 mb-2 w-full" />
-              </>
-            )}
-            <form>
-              <div className="flex flex-col gap-6">
-                <h2>Welcome 2</h2>
-              </div>
-            </form>
+            <Skeleton className="h-10 mb-2 w-full" />
+            <FormTransaction accountId={selectedAccountId} />
           </CardContent>
         </Card>
       </div>
@@ -110,8 +136,14 @@ export default function HomePage() {
       <div className="px-4 md:px-2">
         <Card className="w-full">
           <CardContent>
-            <h2>Table</h2>
-            {loading && <Skeleton className="h-50 w-full" />}
+            {loadingTransactions && <Skeleton className="h-50 w-full" />}
+
+            {!loadingTransactions && (
+              <TableTransactions
+                transactionData={transactionsData}
+                onDelete={handleDeleteTransaction}
+              />
+            )}
           </CardContent>
         </Card>
       </div>
