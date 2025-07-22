@@ -1,6 +1,6 @@
 import { getAccount } from "./action";
-import AccountSection from "@/components/account-section";
-import TransactionWrapper from "@/components/account-transaction-detail";
+import AccountSection from "@/components/section/account-section";
+import TransactionWrapper from "@/components/wrapper/account-transaction-detail";
 
 export default async function HomePage() {
   const { data: accounts } = await getAccount();

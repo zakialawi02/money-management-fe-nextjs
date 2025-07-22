@@ -4,10 +4,10 @@ import { deleteTransactionAction, getTransactions } from "@/app/action";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { getCurrentDate } from "@/lib/utils";
-import TransactionSection from "./transaction-section";
-import TransactionSummarySection from "./transaction-summary-section";
-import { Skeleton } from "./ui/skeleton";
-import { Card, CardContent } from "./ui/card";
+import TransactionSection from "../section/transaction-section";
+import TransactionSummarySection from "../section/transaction-summary-section";
+import { Skeleton } from "../ui/skeleton";
+import { Card, CardContent } from "../ui/card";
 import { toast } from "sonner";
 
 export default function TransactionWrapper() {

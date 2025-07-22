@@ -2,14 +2,14 @@
 
 import { formatCurrency } from "@/lib/utils";
 import { Transaction } from "@/types/auth.types";
-import PieChart from "./pie-chart";
+import PieChart from "../pie-chart";
 import { useState, useEffect } from "react";
-import { Switch } from "./ui/switch";
-import { Button } from "./ui/button";
+import { Switch } from "../ui/switch";
+import { Button } from "../ui/button";
 import { useSearchParams } from "next/navigation";
 import { format } from "date-fns";
-import DatePickerSelect from "./date-picker";
-import { Skeleton } from "./ui/skeleton";
+import DatePickerSelect from "../date-picker";
+import { Skeleton } from "../ui/skeleton";
 
 type TotalAmount = {
   weekly_expense: number;
