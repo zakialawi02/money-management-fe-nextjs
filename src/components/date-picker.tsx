@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import { format, parse } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
@@ -21,12 +21,11 @@ export default function DatePickerInput({
 }: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
-
   const formatString = mode === "month" ? "yyyy-MM" : "yyyy-MM-dd";
   const displayFormat = mode === "month" ? "MMM yyyy" : "yyyy-MM-dd";
-
   const queryDate = searchParams.get(paramKey);
-  const initialDate = (() => {
+
+  const [selectedDate, setSelectedDate] = useState<Date>(() => {
     if (queryDate) {
       try {
         return parse(queryDate, formatString, new Date());
@@ -35,9 +34,22 @@ export default function DatePickerInput({
       }
     }
     return new Date();
-  })();
+  });
 
-  const [selectedDate, setSelectedDate] = useState<Date>(initialDate);
+  useEffect(() => {
+    const queryDate = searchParams.get(paramKey);
+    const newDate = queryDate
+      ? parse(queryDate, formatString, new Date())
+      : new Date();
+
+    setSelectedDate((prevDate) => {
+      const prevFormatted = format(prevDate, formatString);
+      const newFormatted = format(newDate, formatString);
+
+      // Hanya update jika berubah
+      return prevFormatted !== newFormatted ? newDate : prevDate;
+    });
+  }, [searchParams, paramKey, formatString]);
 
   const handleChange = (date: Date | null) => {
     if (!date) return;
