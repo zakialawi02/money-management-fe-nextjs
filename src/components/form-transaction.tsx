@@ -34,7 +34,7 @@ const initialState = {
 
 type Props = {
   accountId?: string;
-  onSuccess?: () => void; // Added onSuccess prop
+  onSuccess?: () => void;
 };
 
 export default function FormTransaction({ accountId, onSuccess }: Props) {
@@ -76,7 +76,7 @@ export default function FormTransaction({ accountId, onSuccess }: Props) {
   useEffect(() => {
     if (state.success === true) {
       toast.success("Transaction successfully created");
-      onSuccess?.(); // Call onSuccess callback
+      onSuccess?.();
     } else if (state.success === false) {
       toast.error(state.message || "Failed to create transaction");
     }
@@ -88,7 +88,7 @@ export default function FormTransaction({ accountId, onSuccess }: Props) {
         <input type="hidden" name="account_id" value={accountId} />
         <div className="grid w-full items-center gap-1.5 mb-3">
           <Label htmlFor="date">Date</Label>
-          <DatePickerInput mode="full" />
+          <DatePickerInput className="w-full px-3 py-2.5" mode="date" />
           {state?.errors && (
             <p className="text-error font-normal">{state?.errors?.date?.[0]}</p>
           )}

@@ -108,7 +108,7 @@ export default function TransactionSummarySection({
 
       {isLoading && (
         <div className="flex items-center justify-center h-96">
-          <Skeleton className="h-72 w-full" />
+          <Skeleton className="h-50 w-full" />
         </div>
       )}
       {!isLoading && <PieChart data={dataTransactions} chartMode={chartMode} />}

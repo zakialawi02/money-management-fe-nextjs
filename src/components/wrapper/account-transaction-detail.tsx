@@ -1,7 +1,10 @@
+// src/components/wrapper/account-transaction-detail.tsx
+
 "use client";
 
+// 1. Tambahkan useCallback ke dalam import
 import { deleteTransactionAction, getTransactions } from "@/app/action";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { getCurrentDate } from "@/lib/utils";
 import TransactionSection from "../section/transaction-section";
@@ -9,6 +12,7 @@ import TransactionSummarySection from "../section/transaction-summary-section";
 import { Skeleton } from "../ui/skeleton";
 import { Card, CardContent } from "../ui/card";
 import { toast } from "sonner";
+import FormTransaction from "../form-transaction";
 
 export default function TransactionWrapper() {
   const searchParams = useSearchParams();
@@ -17,40 +21,47 @@ export default function TransactionWrapper() {
   const [loading, setLoading] = useState(true);
   const [transactions, setTransactions] = useState([]);
   const [summary, setSummary] = useState({ weekly_expense: 0, expense: 0 });
+  const [formKey, setFormKey] = useState(0);
+
+  const fetchData = useCallback(async () => {
+    if (!accountId) return;
+    setLoading(true);
+    try {
+      const res = await getTransactions(accountId, date);
+      setTransactions(res.data || []);
+      setSummary(res.total_amount || { weekly_expense: 0, expense: 0 });
+    } catch {
+      toast.error("Gagal memuat transaksi.");
+    } finally {
+      setLoading(false);
+    }
+  }, [accountId, date]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleDelete = async (id: string) => {
     setLoading(true);
-    const accountId = searchParams.get("accountId");
-    const date = searchParams.get("date") ?? getCurrentDate("month");
     try {
       const res = await deleteTransactionAction(id);
       if (res.success) {
-        toast.success("Transaction deleted successfully");
-        const updated = await getTransactions(accountId ?? "", date);
-        setTransactions(updated.data || []);
+        toast.success("Transaksi berhasil dihapus");
+        await fetchData();
       } else {
-        toast.error("Failed to delete transaction");
+        toast.error("Gagal menghapus transaksi");
       }
     } catch {
-      toast.error("An error occurred while deleting");
+      toast.error("Terjadi kesalahan saat menghapus");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (!accountId) return;
-
-    const fetchData = async () => {
-      setLoading(true);
-      const res = await getTransactions(accountId, date);
-      setTransactions(res.data || []);
-      setSummary(res.total_amount || { weekly_expense: 0, expense: 0 });
-      setLoading(false);
-    };
-
-    fetchData();
-  }, [accountId, date]);
+  const handleSuccess = useCallback(async () => {
+    await fetchData();
+    setFormKey((prevKey) => prevKey + 1);
+  }, [fetchData]);
 
   return (
     <>
@@ -66,9 +77,12 @@ export default function TransactionWrapper() {
         </Card>
         <Card className="w-full">
           <CardContent>
-            <h2 className="text-lg font-semibold mb-3">FORM TRANSACTION</h2>
+            <FormTransaction
+              key={formKey}
+              accountId={accountId ?? ""}
+              onSuccess={handleSuccess}
+            />
           </CardContent>
-          {/* Konten lainnya */}
         </Card>
       </div>
 
