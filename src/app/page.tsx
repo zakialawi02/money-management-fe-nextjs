@@ -1,25 +1,9 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { getAccount, getTransactions } from "./action";
+import { getAccount } from "./action";
 import AccountSection from "@/components/account-section";
-import TransactionSection from "@/components/transaction-section";
-import TransactionSummarySection from "@/components/transaction-summary-section";
-import { getCurrentDate } from "@/lib/utils";
+import TransactionWrapper from "@/components/account-transaction-detail";
 
-type Props = {
-  searchParams?: {
-    accountId?: string;
-    date?: string;
-  };
-};
-
-export default async function HomePage({ searchParams }: Props) {
+export default async function HomePage() {
   const { data: accounts } = await getAccount();
-  const selectedAccountId = searchParams?.accountId ?? accounts[0].id;
-
-  const selectedDate = searchParams?.date ?? getCurrentDate("month");
-
-  const { total_amount: totalAmount, data: dataTransactions } =
-    await getTransactions(selectedAccountId, selectedDate);
 
   if (!accounts || accounts.length === 0) {
     return (
@@ -34,29 +18,8 @@ export default async function HomePage({ searchParams }: Props) {
           <AccountSection accounts={accounts} />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 px-4 md:px-2 gap-4 mb-5">
-          <Card className="w-full p-2">
-            <CardContent className="p-1">
-              <TransactionSummarySection
-                dataTransactions={dataTransactions}
-                totalAmount={totalAmount}
-              />
-            </CardContent>
-          </Card>
-          <Card className="w-full">
-            <CardContent>
-              <h2 className="text-lg font-semibold mb-3">FORM TRANSACTION</h2>
-              {/* Konten lainnya */}
-            </CardContent>
-          </Card>
-        </div>
-
         <div className="px-4 md:px-2">
-          <Card className="w-full">
-            <CardContent>
-              <TransactionSection />
-            </CardContent>
-          </Card>
+          <TransactionWrapper />
         </div>
       </div>
     </>
