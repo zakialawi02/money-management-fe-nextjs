@@ -2,6 +2,8 @@ import { getAccount } from "./action";
 import AccountSection from "@/components/section/account-section";
 import TransactionWrapper from "@/components/wrapper/account-transaction-detail";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const { success, message, data: accounts } = await getAccount();
 

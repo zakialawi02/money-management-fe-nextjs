@@ -1,6 +1,8 @@
 import AccountListSection from "@/components/section/account-lists-section";
 import { getAccount } from "../action";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const { success, message, data: accounts } = await getAccount();
 

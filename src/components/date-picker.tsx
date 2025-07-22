@@ -24,22 +24,25 @@ export default function DatePickerInput({
   const queryDate = searchParams.get(paramKey);
   const formatString = mode === "month" ? "yyyy-MM" : "yyyy-MM-dd";
 
-  const parseQueryDate = (dateStr: string | null): Date => {
-    if (!dateStr) {
+  const [selectedDate, setSelectedDate] = useState<Date>(() => {
+    if (!queryDate) {
       return new Date();
     }
-    const parsedDate = parse(dateStr, formatString, new Date());
-    if (isValid(parsedDate)) {
-      return parsedDate;
-    }
-    return new Date();
-  };
-
-  const [selectedDate, setSelectedDate] = useState<Date>(() =>
-    parseQueryDate(queryDate)
-  );
+    const parsedDate = parse(queryDate, formatString, new Date());
+    return isValid(parsedDate) ? parsedDate : new Date();
+  });
 
   useEffect(() => {
+    const parseQueryDate = (dateStr: string | null): Date => {
+      if (!dateStr) {
+        return new Date();
+      }
+      const parsedDate = parse(dateStr, formatString, new Date());
+      if (isValid(parsedDate)) {
+        return parsedDate;
+      }
+      return new Date();
+    };
     setSelectedDate(parseQueryDate(queryDate));
   }, [queryDate, formatString]);
 
