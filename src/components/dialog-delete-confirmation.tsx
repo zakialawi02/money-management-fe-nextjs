@@ -6,11 +6,17 @@ import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 
 type Props = {
   open: boolean;
+  textConfirmation?: string;
   onCancel: () => void;
   onConfirm: () => void;
 };
 
-export default function DialogDelete({ open, onCancel, onConfirm }: Props) {
+export default function DialogDelete({
+  open,
+  textConfirmation = "Are you sure you want to delete this data?",
+  onCancel,
+  onConfirm,
+}: Props) {
   const [isOpen, setIsOpen] = useState(open);
 
   useEffect(() => {
@@ -35,9 +41,7 @@ export default function DialogDelete({ open, onCancel, onConfirm }: Props) {
         <h2 className="font-bold text-lg mb-2 text-black">
           Delete Transaction
         </h2>
-        <p className="text-black">
-          Are you sure you want to delete this transaction?
-        </p>
+        <p className="text-black">{textConfirmation}</p>
 
         <div className="mt-4 flex justify-end gap-2">
           <Button

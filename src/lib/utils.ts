@@ -6,10 +6,23 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDateSimple(date: string, locale: string = "en-US") {
+  if (!date) return "-";
   const options: Intl.DateTimeFormatOptions = {
     day: "numeric",
     month: "short",
     year: "numeric",
+  };
+  return new Date(date).toLocaleDateString(locale, options);
+}
+
+export function formatDateSimpleLong(date: string, locale: string = "en-US") {
+  if (!date) return "-";
+  const options: Intl.DateTimeFormatOptions = {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "numeric",
   };
   return new Date(date).toLocaleDateString(locale, options);
 }

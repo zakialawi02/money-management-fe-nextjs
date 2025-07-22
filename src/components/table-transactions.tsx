@@ -110,6 +110,7 @@ export default function TableTransactions({
       </Table>
 
       <DialogDelete
+        textConfirmation="Are you sure you want to delete this transaction?"
         open={openDialog}
         onCancel={() => setOpenDialog(false)}
         onConfirm={confirmDelete}

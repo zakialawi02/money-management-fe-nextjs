@@ -40,6 +40,33 @@ export async function createAccountAction(prev: Account, formData: FormData) {
   }
 }
 
+export async function deleteAccountAction(id: string) {
+  try {
+    const token = (await cookies()).get("authToken")?.value;
+    const res = await fetch(`${API_BASE_URL}/api/v1/accounts/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      console.error("Failed to delete account:", res.statusText);
+      console.log(json);
+      return {
+        success: false,
+        message: json.message || "Failed to delete account",
+        errors: json.error,
+      };
+    }
+
+    return json;
+  } catch (error) {
+    console.error("deleteAccount error:", error);
+    return { success: false, message: "An error occurred" };
+  }
+}
+
 export async function getAccount() {
   try {
     const token = (await cookies()).get("authToken")?.value;
