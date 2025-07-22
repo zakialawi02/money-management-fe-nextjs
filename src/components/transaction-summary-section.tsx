@@ -3,10 +3,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { format } from "date-fns";
-
 import { Transaction } from "@/types/auth.types";
 import { formatCurrency } from "@/lib/utils";
-
 import PieChart from "./pie-chart";
 import { Switch } from "./ui/switch";
 import { Button } from "./ui/button";

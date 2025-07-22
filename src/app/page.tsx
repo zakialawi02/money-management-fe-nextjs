@@ -3,7 +3,6 @@ import { getAccount, getTransactions } from "./action";
 import AccountSection from "@/components/account-section";
 import TransactionSection from "@/components/transaction-section";
 import TransactionSummarySection from "@/components/transaction-summary-section";
-import { Suspense } from "react";
 import { getCurrentDate } from "@/lib/utils";
 
 type Props = {
@@ -38,12 +37,10 @@ export default async function HomePage({ searchParams }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-2 px-4 md:px-2 gap-4 mb-5">
           <Card className="w-full p-2">
             <CardContent className="p-1">
-              <Suspense fallback={<div>Loading Chart...</div>}>
-                <TransactionSummarySection
-                  dataTransactions={dataTransactions}
-                  totalAmount={totalAmount}
-                />
-              </Suspense>
+              <TransactionSummarySection
+                dataTransactions={dataTransactions}
+                totalAmount={totalAmount}
+              />
             </CardContent>
           </Card>
           <Card className="w-full">

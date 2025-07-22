@@ -11,19 +11,22 @@ type Mode = "month" | "date";
 type Props = {
   mode?: Mode;
   paramKey?: string;
+  className?: string;
 };
 
 export default function DatePickerInput({
   mode = "month",
   paramKey = "date",
+  className = "",
 }: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const queryDate = searchParams.get(paramKey);
   const formatString = mode === "month" ? "yyyy-MM" : "yyyy-MM-dd";
+  const displayFormat = mode === "month" ? "MMM yyyy" : "yyyy-MM-dd";
 
-  const [selectedDate, setSelectedDate] = useState<Date>(() => {
+  const queryDate = searchParams.get(paramKey);
+  const initialDate = (() => {
     if (queryDate) {
       try {
         return parse(queryDate, formatString, new Date());
@@ -32,7 +35,9 @@ export default function DatePickerInput({
       }
     }
     return new Date();
-  });
+  })();
+
+  const [selectedDate, setSelectedDate] = useState<Date>(initialDate);
 
   const handleChange = (date: Date | null) => {
     if (!date) return;
@@ -47,9 +52,10 @@ export default function DatePickerInput({
     <DatePicker
       selected={selectedDate}
       onChange={handleChange}
-      dateFormat={mode === "month" ? "MMM yyyy" : "yyyy-MM-dd"}
+      dateFormat={displayFormat}
       showMonthYearPicker={mode === "month"}
-      className="bg-secondary-background border-2 border-black px-2 py-1 rounded-sm cursor-pointer"
+      showPopperArrow={false}
+      className={`bg-secondary-background border-2 border-black px-2 py-1 rounded-sm font-mono text-sm cursor-pointer focus:outline-none ${className}`}
       calendarClassName="neo-calendar"
     />
   );

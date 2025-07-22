@@ -101,7 +101,7 @@ export default function TableTransactions({
             ))
           ) : (
             <TableRow className="bg-secondary-background">
-              <TableCell colSpan={5} className="text-center">
+              <TableCell colSpan={5} className="text-center text-foreground">
                 No data available
               </TableCell>
             </TableRow>
