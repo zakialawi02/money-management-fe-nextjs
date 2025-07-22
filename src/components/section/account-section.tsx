@@ -6,6 +6,7 @@ import DropdownAccount from "@/components/dropdown-account";
 import { Account } from "@/types/auth.types";
 import ButtonShareStream from "../button-share-stream";
 import { format } from "date-fns";
+import { Skeleton } from "../ui/skeleton";
 
 type Props = {
   accounts: Account[];
@@ -24,18 +25,20 @@ export default function AccountSection({ accounts }: Props) {
   // First effect: Only to set and synchronize selectedAccountId
   useEffect(() => {
     const queryId = searchParams.get("accountId");
-    const validQuery = queryId && accounts.some((a) => a.id === queryId);
+    const accountExists = (id: string) => accounts.some((a) => a.id === id);
 
-    if (validQuery) {
+    if (queryId && accountExists(queryId)) {
       if (queryId !== selectedAccountId) {
         setSelectedAccountId(queryId);
       }
     } else if (accounts.length > 0) {
       const defaultAccountId = accounts[0].id;
-      setSelectedAccountId(defaultAccountId);
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("accountId", defaultAccountId);
-      router.replace(`?${params.toString()}`, { scroll: false });
+      if (defaultAccountId !== selectedAccountId) {
+        setSelectedAccountId(defaultAccountId);
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("accountId", defaultAccountId);
+        router.replace(`?${params.toString()}`, { scroll: false });
+      }
     }
   }, [accounts, searchParams, router, selectedAccountId]);
 
@@ -53,11 +56,18 @@ export default function AccountSection({ accounts }: Props) {
   const handleAccountChange = (newId: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("accountId", newId);
-    router.replace(`?${params.toString()}`, { scroll: false });
+    router.push(`?${params.toString()}`, { scroll: false });
   };
 
   if (!selectedAccountId) {
-    return null;
+    return (
+      <>
+        <Skeleton className="h-[78px] w-full" />
+        <div className="mt-3 flex justify-center">
+          <Skeleton className="h-9 w-48" />
+        </div>
+      </>
+    );
   }
 
   return (
@@ -68,12 +78,14 @@ export default function AccountSection({ accounts }: Props) {
         onChange={handleAccountChange}
       />
       <div className="mt-3 flex justify-center">
-        {userId && (
+        {userId ? (
           <ButtonShareStream
             userId={userId}
             accountId={selectedAccountId}
             date={selectedDate}
           />
+        ) : (
+          <Skeleton className="h-9 w-48" />
         )}
       </div>
     </>

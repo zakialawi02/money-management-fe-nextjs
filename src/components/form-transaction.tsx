@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import DatePickerInput from "./date-picker";
+import DatePickerInputField from "./date-picker-input-field";
 import InputCurrency from "./input-currency";
 import { TransactionCategory } from "@/types/auth.types";
 import { toast } from "sonner";
@@ -43,7 +43,6 @@ export default function FormTransaction({ accountId, onSuccess }: Props) {
     TransactionCategory[]
   >([]);
   const [type, setType] = useState("expense");
-
   const [state, formAction, pending] = useActionState(
     storeTransactionAction,
     initialState
@@ -88,7 +87,7 @@ export default function FormTransaction({ accountId, onSuccess }: Props) {
         <input type="hidden" name="account_id" value={accountId} />
         <div className="grid w-full items-center gap-1.5 mb-3">
           <Label htmlFor="date">Date</Label>
-          <DatePickerInput className="w-full px-3 py-2.5" mode="date" />
+          <DatePickerInputField className="w-full px-3 py-2.5" mode="date" />
           {state?.errors && (
             <p className="text-error font-normal">{state?.errors?.date?.[0]}</p>
           )}

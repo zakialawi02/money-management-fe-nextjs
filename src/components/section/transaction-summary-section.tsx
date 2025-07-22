@@ -3,11 +3,9 @@
 import { formatCurrency } from "@/lib/utils";
 import { Transaction } from "@/types/auth.types";
 import PieChart from "../pie-chart";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Switch } from "../ui/switch";
 import { Button } from "../ui/button";
-import { useSearchParams } from "next/navigation";
-import { format } from "date-fns";
 import DatePickerSelect from "../date-picker";
 import { Skeleton } from "../ui/skeleton";
 
@@ -30,18 +28,6 @@ export default function TransactionSummarySection({
   isLoading,
 }: Props) {
   const [chartMode, setChartMode] = useState<ChartMode>("category");
-  const searchParams = useSearchParams();
-  const currentDate = format(new Date(), "yyyy-MM");
-  const [selectedDate, setSelectedDate] = useState<string>(
-    searchParams.get("date") ?? currentDate
-  );
-
-  useEffect(() => {
-    const queryDate = searchParams.get("date");
-    if (queryDate) {
-      setSelectedDate(queryDate);
-    }
-  }, [searchParams]);
 
   const handleToggle = () => {
     setChartMode((prev) => (prev === "category" ? "type" : "category"));
@@ -107,7 +93,7 @@ export default function TransactionSummarySection({
       </div>
 
       {isLoading && (
-        <div className="flex items-center justify-center h-96">
+        <div className="flex items-center justify-center h-70">
           <Skeleton className="h-50 w-full" />
         </div>
       )}

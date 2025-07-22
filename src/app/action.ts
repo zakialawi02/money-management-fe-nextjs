@@ -113,7 +113,6 @@ export async function storeTransactionAction(
         errors: json.errors,
       };
     }
-    console.log(json);
 
     return json;
   } catch (error) {
@@ -133,7 +132,6 @@ export async function deleteTransactionAction(id: string) {
     });
 
     const data = await res.json();
-    console.log(data);
 
     if (!res.ok) {
       console.error("Failed to delete transaction:", data?.message);

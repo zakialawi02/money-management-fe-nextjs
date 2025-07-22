@@ -64,7 +64,7 @@ export default function DropdownAccount({ data, selectedId, onChange }: Props) {
               }`}
               onClick={() => {
                 setOpen(false);
-                onChange(acc.id); // Biarkan parent handle navigasi
+                onChange(acc.id);
               }}
             >
               <div className="flex justify-between items-center w-full">
