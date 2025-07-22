@@ -1,17 +1,59 @@
 "use server";
 
-import { Transaction } from "@/types/auth.types";
+import { Account, Transaction } from "@/types/auth.types";
 import { cookies } from "next/headers";
 
 const API_BASE_URL = process.env.API_URL ?? "http://127.0.0.1:8000";
 
+export async function createAccountAction(prev: Account, formData: FormData) {
+  try {
+    const data = {
+      name: formData.get("name") as string,
+      description: formData.get("description") as string,
+      balance: formData.get("balance") as string,
+    };
+    const token = (await cookies()).get("authToken")?.value;
+    const res = await fetch(`${API_BASE_URL}/api/v1/accounts`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      console.error("Failed to create account:", res.statusText);
+      console.log(json);
+      return {
+        data,
+        success: false,
+        message: json.message || "Failed to create account",
+        errors: json.error,
+      };
+    }
+
+    return json;
+  } catch (error) {
+    console.error("createAccount error:", error);
+    return { success: false, message: "An error occurred" };
+  }
+}
+
 export async function getAccount() {
   try {
     const token = (await cookies()).get("authToken")?.value;
-
     if (!token) {
       console.warn("No auth token found");
-      return { data: [] };
+      return {
+        success: false,
+        message: "No auth token found",
+        data: [
+          {
+            redirect: "/login",
+          },
+        ],
+      };
     }
 
     const response = await fetch(`${API_BASE_URL}/api/v1/accounts`, {
@@ -21,16 +63,15 @@ export async function getAccount() {
         Authorization: `Bearer ${token}`,
       },
     });
-
     if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
+      return { success: false, message: "An error occurred", data: [] };
     }
 
     const json = await response.json();
-    return { data: json.data || [] };
+    return { success: true, data: json.data || [] };
   } catch (error) {
     console.error("getAccount error:", error);
-    return { data: [] };
+    return { success: false, message: "An error occurred", data: [] };
   }
 }
 
@@ -53,7 +94,7 @@ export async function getTransactions(accountId: string, dateParam?: string) {
     return json;
   } catch (error) {
     console.error("getTransactions error:", error);
-    return { data: [] };
+    return { success: false, message: "An error occurred", data: [] };
   }
 }
 
@@ -67,13 +108,16 @@ export async function getTransactionCategories() {
     });
     if (!res.ok) {
       console.error("Failed to fetch transaction categories:", res.statusText);
-      return [];
+      return {
+        success: false,
+        message: "Failed to fetch transaction categories",
+      };
     }
     const json = await res.json();
     return json.data || [];
   } catch (error) {
     console.error("Error while fetching transaction categories:", error);
-    return [];
+    return { success: false, message: "An error occurred" };
   }
 }
 

@@ -7,6 +7,8 @@ import { Account } from "@/types/auth.types";
 import ButtonShareStream from "../button-share-stream";
 import { format } from "date-fns";
 import { Skeleton } from "../ui/skeleton";
+import { toast } from "sonner";
+import DrawerCreateAccount from "../drawer-create-account";
 
 type Props = {
   accounts: Account[];
@@ -18,6 +20,7 @@ export default function AccountSection({ accounts }: Props) {
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(
     null
   );
+  const [openDrawer, setOpenDrawer] = useState(accounts.length === 0);
   const [userId, setUserId] = useState<string>("");
   const currentDate = format(new Date(), "yyyy-MM");
   const selectedDate = searchParams.get("date") ?? currentDate;
@@ -25,20 +28,21 @@ export default function AccountSection({ accounts }: Props) {
   // First effect: Only to set and synchronize selectedAccountId
   useEffect(() => {
     const queryId = searchParams.get("accountId");
-    const accountExists = (id: string) => accounts.some((a) => a.id === id);
+    const validQuery = queryId && accounts.some((a) => a.id === queryId);
 
-    if (queryId && accountExists(queryId)) {
+    if (validQuery) {
       if (queryId !== selectedAccountId) {
         setSelectedAccountId(queryId);
       }
     } else if (accounts.length > 0) {
       const defaultAccountId = accounts[0].id;
-      if (defaultAccountId !== selectedAccountId) {
-        setSelectedAccountId(defaultAccountId);
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("accountId", defaultAccountId);
-        router.replace(`?${params.toString()}`, { scroll: false });
-      }
+      setSelectedAccountId(defaultAccountId);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("accountId", defaultAccountId);
+      router.replace(`?${params.toString()}`, { scroll: false });
+    } else if (accounts.length === 0) {
+      toast.error("You do not have an account, please create one first");
+      setOpenDrawer(true);
     }
   }, [accounts, searchParams, router, selectedAccountId]);
 
@@ -56,38 +60,60 @@ export default function AccountSection({ accounts }: Props) {
   const handleAccountChange = (newId: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("accountId", newId);
-    router.push(`?${params.toString()}`, { scroll: false });
+    router.replace(`?${params.toString()}`, { scroll: false });
   };
 
-  if (!selectedAccountId) {
-    return (
-      <>
-        <Skeleton className="h-[78px] w-full" />
-        <div className="mt-3 flex justify-center">
-          <Skeleton className="h-9 w-48" />
-        </div>
-      </>
-    );
-  }
+  const hanleNewAccount = () => {
+    setOpenDrawer(true);
+  };
+  const handleCloseDrawer = () => {
+    if (accounts.length === 0) {
+      toast.error(
+        "You do not have an account. You must create an account to proceed"
+      );
+      setTimeout(() => {
+        setOpenDrawer(true);
+      }, 400);
+      setOpenDrawer(false);
+    } else {
+      setOpenDrawer(false);
+    }
+  };
+
+  const handleAccountCreated = () => {
+    router.refresh();
+    setOpenDrawer(false);
+  };
 
   return (
     <>
-      <DropdownAccount
-        data={accounts}
-        selectedId={selectedAccountId}
-        onChange={handleAccountChange}
-      />
-      <div className="mt-3 flex justify-center">
-        {userId ? (
-          <ButtonShareStream
-            userId={userId}
-            accountId={selectedAccountId}
-            date={selectedDate}
+      {selectedAccountId && (
+        <>
+          <DropdownAccount
+            data={accounts}
+            selectedId={selectedAccountId}
+            onChange={handleAccountChange}
+            onClick={hanleNewAccount}
           />
-        ) : (
-          <Skeleton className="h-9 w-48" />
-        )}
-      </div>
+          <div className="mt-3 flex justify-center">
+            {userId ? (
+              <ButtonShareStream
+                userId={userId}
+                accountId={selectedAccountId}
+                date={selectedDate}
+              />
+            ) : (
+              <Skeleton className="h-18 w-full my-1" />
+            )}
+          </div>
+        </>
+      )}
+
+      <DrawerCreateAccount
+        open={openDrawer}
+        onCloseDrawer={handleCloseDrawer}
+        onSuccess={handleAccountCreated}
+      />
     </>
   );
 }

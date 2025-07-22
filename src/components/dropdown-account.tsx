@@ -9,9 +9,15 @@ type Props = {
   data: Account[];
   selectedId: string;
   onChange: (id: string) => void;
+  onClick?: () => void;
 };
 
-export default function DropdownAccount({ data, selectedId, onChange }: Props) {
+export default function DropdownAccount({
+  data,
+  selectedId,
+  onChange,
+  onClick,
+}: Props) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const selected = data.find((acc) => acc.id === selectedId);
@@ -84,7 +90,10 @@ export default function DropdownAccount({ data, selectedId, onChange }: Props) {
           ))}
           <div
             className="p-2 bg-main/60 hover:bg-main/30 border-t border-black cursor-pointer"
-            onClick={() => alert("Create new account clicked!")}
+            onClick={() => {
+              setOpen(false);
+              onClick?.();
+            }}
           >
             <div className="font-bold">Create New Account</div>
             <div className="text-sm text-gray-600">Create a new account</div>

@@ -26,6 +26,10 @@ export default function TransactionWrapper() {
     setLoading(true);
     try {
       const res = await getTransactions(accountId, date);
+      if (!res.success) {
+        toast.error(`${res.message}: Try again`);
+        return;
+      }
       setTransactions(res.data || []);
       setSummary(res.total_amount || { weekly_expense: 0, expense: 0 });
     } catch {

@@ -3,13 +3,16 @@ import AccountSection from "@/components/section/account-section";
 import TransactionWrapper from "@/components/wrapper/account-transaction-detail";
 
 export default async function HomePage() {
-  const { data: accounts } = await getAccount();
+  const { success, message, data: accounts } = await getAccount();
 
-  if (!accounts || accounts.length === 0) {
+  if (!success) {
     return (
-      <div className="text-center mt-10 text-gray-500">No accounts found</div>
+      <div className="text-center mt-10 text-foreground">
+        {message}: Please try again!!
+      </div>
     );
   }
+
   return (
     <>
       <div className="w-full max-w-[90rem] mx-auto">

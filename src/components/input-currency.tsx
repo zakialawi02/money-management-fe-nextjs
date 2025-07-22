@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { Input } from "./ui/input";
 
 interface Props {
-  value: number | string;
+  value?: number | string;
   onChange?: (value: string) => void;
   placeholder?: string;
+  name?: string;
   disabled?: boolean;
 }
 
@@ -23,6 +24,7 @@ export default function InputCurrency({
   onChange = () => {},
   placeholder = "Input Value",
   disabled = false,
+  name,
   ...props
 }: Props) {
   const [displayValue, setDisplayValue] = useState(() =>
@@ -59,7 +61,7 @@ export default function InputCurrency({
         {...props}
       />
       {/* Hidden input untuk dikirim ke form */}
-      <input type="hidden" name="amount" value={rawValue} />
+      <input type="hidden" name={name} value={rawValue} />
     </div>
   );
 }

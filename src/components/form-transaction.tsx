@@ -17,6 +17,7 @@ import DatePickerInputField from "./date-picker-input-field";
 import InputCurrency from "./input-currency";
 import { TransactionCategory } from "@/types/auth.types";
 import { toast } from "sonner";
+import { Skeleton } from "./ui/skeleton";
 
 const initialState = {
   data: {
@@ -42,6 +43,7 @@ export default function FormTransaction({ accountId, onSuccess }: Props) {
   const [filteredCategories, setFilteredCategories] = useState<
     TransactionCategory[]
   >([]);
+  const [loading, setLoading] = useState(true);
   const [type, setType] = useState("expense");
   const [state, formAction, pending] = useActionState(
     storeTransactionAction,
@@ -50,17 +52,23 @@ export default function FormTransaction({ accountId, onSuccess }: Props) {
 
   // Fetch all categories once
   useEffect(() => {
-    const fetchCategories = async () => {
-      const res = await getTransactionCategories();
-      setAllCategories(res);
-    };
-    fetchCategories();
+    getTransactionCategories()
+      .then((res) => {
+        if (res.success === false) {
+          toast.error(
+            `${res.message}: Can't continue to create transaction request`
+          );
+          setLoading(false);
+          return;
+        }
+        setAllCategories(res);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   // Filter categories whenever type changes
   useEffect(() => {
     let filtered = [];
-
     if (type === "expense") {
       filtered = allCategories.filter((item) => item.name !== "Uang Masuk");
     } else if (type === "income") {
@@ -83,78 +91,97 @@ export default function FormTransaction({ accountId, onSuccess }: Props) {
 
   return (
     <>
-      <form action={formAction}>
-        <input type="hidden" name="account_id" value={accountId} />
-        <div className="grid w-full items-center gap-1.5 mb-3">
-          <Label htmlFor="date">Date</Label>
-          <DatePickerInputField className="w-full px-3 py-2.5" mode="date" />
-          {state?.errors && (
-            <p className="text-error font-normal">{state?.errors?.date?.[0]}</p>
-          )}
-        </div>
+      {loading && (
+        <>
+          <Skeleton className="w-full h-12 mb-3" />
+          <Skeleton className="w-full h-12 mb-3" />
+          <Skeleton className="w-full h-12 mb-3" />
+          <Skeleton className="w-full h-12 mb-3" />
+          <Skeleton className="w-full h-12 mb-3" />
+          <Skeleton className="w-full h-12 mb-3" />
+        </>
+      )}
 
-        <div className="grid w-full items-center gap-1.5 mb-3">
-          <Label htmlFor="amount">Amount</Label>
-          <InputCurrency value={state?.data?.amount ?? 0} />
-          {state?.errors && (
-            <p className="text-error font-normal">
-              {state?.errors?.amount?.[0]}
-            </p>
-          )}
-          <Select
-            name="type"
-            defaultValue={state?.data?.type}
-            onValueChange={(value) => setType(value)}
-          >
-            <SelectTrigger className="w-full bg-secondary-background text-foreground">
-              <SelectValue placeholder="Select" />
-            </SelectTrigger>
-            <SelectContent className="bg-secondary-background text-foreground">
-              <SelectGroup>
-                <SelectItem value="expense">Expense</SelectItem>
-                <SelectItem value="income">Income</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          {state?.errors && (
-            <p className="text-error font-normal">{state?.errors?.type?.[0]}</p>
-          )}
-        </div>
+      {!loading && (
+        <form action={formAction}>
+          <input type="hidden" name="account_id" value={accountId} />
+          <div className="grid w-full items-center gap-1.5 mb-3">
+            <Label htmlFor="date">Date</Label>
+            <DatePickerInputField className="w-full px-3 py-2.5" mode="date" />
+            {state?.errors && (
+              <p className="text-error font-normal">
+                {state?.errors?.date?.[0]}
+              </p>
+            )}
+          </div>
 
-        <div className="grid w-full items-center gap-1.5 mb-3">
-          <Label htmlFor="description">Description/Note</Label>
-          <Input
-            type="text"
-            id="description"
-            name="description"
-            placeholder="Description Note"
-          />
-          {state?.errors && (
-            <p className="text-error font-normal">
-              {state?.errors?.description?.[0]}
-            </p>
-          )}
-        </div>
+          <div className="grid w-full items-center gap-1.5 mb-3">
+            <Label htmlFor="amount">Amount</Label>
+            <InputCurrency name="amount" value={state?.data?.amount ?? 0} />
+            {state?.errors && (
+              <p className="text-error font-normal">
+                {state?.errors?.amount?.[0]}
+              </p>
+            )}
+            <Select
+              name="type"
+              defaultValue={state?.data?.type}
+              onValueChange={(value) => setType(value)}
+            >
+              <SelectTrigger className="w-full bg-secondary-background text-foreground">
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
+              <SelectContent className="bg-secondary-background text-foreground">
+                <SelectGroup>
+                  <SelectItem value="expense">Expense</SelectItem>
+                  <SelectItem value="income">Income</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            {state?.errors && (
+              <p className="text-error font-normal">
+                {state?.errors?.type?.[0]}
+              </p>
+            )}
+          </div>
 
-        <div className="grid w-full items-center gap-1.5 mb-3">
-          <Label htmlFor="transactions_category_id">Transaction Category</Label>
-          <SelectCategoryTransaction
-            categories={filteredCategories}
-            defaultValue={state?.data?.transactions_category_id}
-          />
-          {state?.errors && (
-            <p className="text-error font-normal">
-              {state?.errors?.transactions_category_id?.[0]}
-            </p>
-          )}
-        </div>
+          <div className="grid w-full items-center gap-1.5 mb-3">
+            <Label htmlFor="description">Description/Note</Label>
+            <Input
+              type="text"
+              id="description"
+              name="description"
+              placeholder="Description Note"
+            />
+            {state?.errors && (
+              <p className="text-error font-normal">
+                {state?.errors?.description?.[0]}
+              </p>
+            )}
+          </div>
 
-        <Button type="submit" className="w-full" disabled={pending}>
-          <SaveIcon className="mr-1 h-4 w-4" />
-          {pending ? "Submitting..." : "Submit"}
-          <span className="sr-only">Submit</span>
-        </Button>
-      </form>
+          <div className="grid w-full items-center gap-1.5 mb-3">
+            <Label htmlFor="transactions_category_id">
+              Transaction Category
+            </Label>
+            <SelectCategoryTransaction
+              categories={filteredCategories}
+              defaultValue={state?.data?.transactions_category_id}
+            />
+            {state?.errors && (
+              <p className="text-error font-normal">
+                {state?.errors?.transactions_category_id?.[0]}
+              </p>
+            )}
+          </div>
+
+          <Button type="submit" className="w-full" disabled={pending}>
+            <SaveIcon className="mr-1 h-4 w-4" />
+            {pending ? "Submitting..." : "Submit"}
+            <span className="sr-only">Submit</span>
+          </Button>
+        </form>
+      )}
     </>
   );
 }
