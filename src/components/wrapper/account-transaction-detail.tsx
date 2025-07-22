@@ -1,11 +1,8 @@
-// src/components/wrapper/account-transaction-detail.tsx
-
 "use client";
 
-// 1. Tambahkan useCallback ke dalam import
 import { deleteTransactionAction, getTransactions } from "@/app/action";
 import { useEffect, useState, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation"; // 1. Import useRouter
 import { getCurrentDate } from "@/lib/utils";
 import TransactionSection from "../section/transaction-section";
 import TransactionSummarySection from "../section/transaction-summary-section";
@@ -16,6 +13,7 @@ import FormTransaction from "../form-transaction";
 
 export default function TransactionWrapper() {
   const searchParams = useSearchParams();
+  const router = useRouter(); // 2. Dapatkan instance router
   const accountId = searchParams.get("accountId");
   const date = searchParams.get("date") ?? getCurrentDate("month");
   const [loading, setLoading] = useState(true);
@@ -48,6 +46,7 @@ export default function TransactionWrapper() {
       if (res.success) {
         toast.success("Transaksi berhasil dihapus");
         await fetchData();
+        router.refresh();
       } else {
         toast.error("Gagal menghapus transaksi");
       }
@@ -60,8 +59,9 @@ export default function TransactionWrapper() {
 
   const handleSuccess = useCallback(async () => {
     await fetchData();
+    router.refresh();
     setFormKey((prevKey) => prevKey + 1);
-  }, [fetchData]);
+  }, [fetchData, router]);
 
   return (
     <>
