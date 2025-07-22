@@ -125,3 +125,18 @@
     @apply cursor-pointer;
   }
 }
+
+.neo-calendar {
+  @apply !border-2 !border-black !bg-secondary-background !shadow-[3px_3px_0_#000] !font-mono;
+}
+.neo-calendar .react-datepicker__header {
+  @apply !bg-secondary-background !border-b-2 !border-black !text-foreground;
+}
+.neo-calendar .react-datepicker__month-text,
+.neo-calendar .react-datepicker__day {
+  @apply !px-2 !py-3 border-2 border-black !bg-secondary-background cursor-pointer font-bold !text-foreground !rounded-sm;
+}
+.neo-calendar .react-datepicker__day--selected,
+.neo-calendar .react-datepicker__month-text--selected {
+  @apply !bg-foreground !text-secondary-background;
+}

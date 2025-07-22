@@ -8,6 +8,12 @@ const API_BASE_URL = process.env.API_URL ?? "http://127.0.0.1:8000";
 export async function getAccount() {
   try {
     const token = (await cookies()).get("authToken")?.value;
+
+    if (!token) {
+      console.warn("No auth token found");
+      return { data: [] };
+    }
+
     const response = await fetch(`${API_BASE_URL}/api/v1/accounts`, {
       method: "GET",
       headers: {
@@ -15,11 +21,13 @@ export async function getAccount() {
         Authorization: `Bearer ${token}`,
       },
     });
-    const json = await response.json();
-    if (json.data?.length >= 0) {
-      return json;
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
     }
-    return { data: [] };
+
+    const json = await response.json();
+    return { data: json.data || [] };
   } catch (error) {
     console.error("getAccount error:", error);
     return { data: [] };

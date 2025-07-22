@@ -35,7 +35,7 @@ export default function DropdownAccount({ data, selectedId, onChange }: Props) {
       {/* Selected */}
       <div
         onClick={() => setOpen(!open)}
-        className="cursor-pointer p-4 border-4 border-black bg-secondary-background shadow-[6px_6px_0px_0px_#000] rounded-sm flex justify-between items-center"
+        className="cursor-pointer p-2.5 border-4 border-black bg-secondary-background shadow-[6px_6px_0px_0px_#000] rounded-sm flex justify-between items-center"
       >
         <div className="flex justify-between items-center w-full">
           <div>
@@ -55,16 +55,16 @@ export default function DropdownAccount({ data, selectedId, onChange }: Props) {
 
       {/* Options */}
       {open && (
-        <div className="absolute z-10 mt-2 w-full bg-white border-4 border-black rounded-sm shadow-[6px_6px_0px_0px_#000]">
+        <div className="absolute z-10 mt-2 w-full bg-secondary-background border-4 border-black rounded-sm shadow-[6px_6px_0px_0px_#000]">
           {data.map((acc) => (
             <div
               key={acc.id}
-              className={`p-3 border-b border-black last:border-b-0 cursor-pointer hover:bg-yellow-200 ${
-                acc.id === selectedId ? "bg-yellow-300" : ""
+              className={`p-3 border-b border-black last:border-b-0 cursor-pointer hover:bg-warning/50 ${
+                acc.id === selectedId ? "bg-warning" : ""
               }`}
               onClick={() => {
                 setOpen(false);
-                onChange(acc.id);
+                onChange(acc.id); // Biarkan parent handle navigasi
               }}
             >
               <div className="flex justify-between items-center w-full">
@@ -83,7 +83,7 @@ export default function DropdownAccount({ data, selectedId, onChange }: Props) {
             </div>
           ))}
           <div
-            className="p-2 bg-blue-100 hover:bg-blue-200 border-t border-black cursor-pointer"
+            className="p-2 bg-main/60 hover:bg-main/30 border-t border-black cursor-pointer"
             onClick={() => alert("Create new account clicked!")}
           >
             <div className="font-bold">Create New Account</div>

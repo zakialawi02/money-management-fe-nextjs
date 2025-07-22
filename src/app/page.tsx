@@ -1,163 +1,67 @@
-"use client";
-
 import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { deleteTransactionAction, getAccount, getTransactions } from "./action";
-import DropdownAccount from "@/components/dropdown-account";
-import { Account, Transaction } from "@/types/auth.types";
-import TableTransactions from "@/components/table-transactions";
-import FormTransaction from "@/components/form-transaction";
-import ButtonShareStream from "@/components/button-share-stream";
+import { getAccount, getTransactions } from "./action";
+import AccountSection from "@/components/account-section";
+import TransactionSection from "@/components/transaction-section";
+import TransactionSummarySection from "@/components/transaction-summary-section";
+import { Suspense } from "react";
 import { getCurrentDate } from "@/lib/utils";
-import { toast } from "sonner";
 
-export default function HomePage() {
-  const [loadingAccount, setLoadingAccount] = useState(true);
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [selectedAccountId, setSelectedAccountId] = useState("");
-  const [selectedDate, setSelectedDate] = useState(() =>
-    getCurrentDate("month")
-  );
-  const [transactionsData, setTransactionsData] = useState<Transaction[]>([]);
-  const [loadingTransactions, setLoadingTransactions] = useState(true);
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  const fetchTransactions = useCallback(async () => {
-    setLoadingTransactions(true);
-    if (!selectedAccountId) {
-      setLoadingTransactions(false);
-      return;
-    }
-
-    const now = new Date();
-    const dateParam =
-      searchParams.get("date") ??
-      `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-
-    const txResult = await getTransactions(selectedAccountId, dateParam);
-
-    setTransactionsData(txResult.data ?? []);
-    setLoadingTransactions(false);
-  }, [selectedAccountId, searchParams]);
-
-  const handleDeleteTransaction = async (id: string) => {
-    const res = await deleteTransactionAction(id);
-    if (res.success) {
-      toast.success("Transaction deleted successfully");
-      // refresh data
-      setTransactionsData((prev) => prev.filter((tx) => tx.id !== id));
-    } else {
-      toast.error(res.message);
-    }
+type Props = {
+  searchParams?: {
+    accountId?: string;
+    date?: string;
   };
+};
 
-  const handleTransactionFormSuccess = useCallback(() => {
-    fetchTransactions();
-  }, [fetchTransactions]); // Dependency on fetchTransactions is necessary here
+export default async function HomePage({ searchParams }: Props) {
+  const { data: accounts } = await getAccount();
+  const selectedAccountId = searchParams?.accountId ?? accounts[0].id;
 
-  // Fetch account data when the page is first loaded
-  useEffect(() => {
-    const fetchAccounts = async () => {
-      const res = await getAccount();
-      const accountList: Account[] = res.data || [];
+  const selectedDate = searchParams?.date ?? getCurrentDate("month");
 
-      setAccounts(accountList);
-      setLoadingAccount(false);
+  const { total_amount: totalAmount, data: dataTransactions } =
+    await getTransactions(selectedAccountId, selectedDate);
 
-      const urlAccountId = searchParams.get("accountId");
-
-      if (urlAccountId && accountList.find((acc) => acc.id === urlAccountId)) {
-        setSelectedAccountId(urlAccountId);
-      } else if (accountList.length > 0) {
-        const firstId = accountList[0].id;
-        setSelectedAccountId(firstId);
-        const newParams = new URLSearchParams(searchParams.toString());
-        newParams.set("accountId", firstId);
-        router.replace(`?${newParams.toString()}`);
-      }
-    };
-
-    fetchAccounts();
-  }, [router, searchParams]);
-
-  // Fetch transactions when account changes or search params change
-  useEffect(() => {
-    fetchTransactions();
-  }, [selectedAccountId, searchParams, fetchTransactions]);
-
-  const handleAccountChange = (id: string) => {
-    setSelectedAccountId(id);
-    const newParams = new URLSearchParams(searchParams.toString());
-    newParams.set("accountId", id);
-    router.replace(`?${newParams.toString()}`);
-  };
-
+  if (!accounts || accounts.length === 0) {
+    return (
+      <div className="text-center mt-10 text-gray-500">No accounts found</div>
+    );
+  }
   return (
-    <div className="w-full max-w-[90rem] mx-auto py-3">
-      <div className="flex items-center justify-center">
-        <h1 className="text-center text-3xl">Pocket</h1>
-      </div>
+    <>
+      <div className="w-full max-w-[90rem] mx-auto">
+        <div className="mx-auto md:w-96 p-3">
+          <h1 className="text-center text-3xl mb-3">Pocket</h1>
+          <AccountSection accounts={accounts} />
+        </div>
 
-      <div className="mx-auto mb-3 md:w-96 p-3 rounded-md">
-        {loadingAccount ? (
-          <Skeleton className="h-20 w-full" />
-        ) : (
-          <DropdownAccount
-            data={accounts}
-            selectedId={selectedAccountId}
-            onChange={handleAccountChange}
-          />
-        )}
-        <div className="mt-3 flex justify-center">
-          {loadingAccount ? (
-            <Skeleton className="h-10 w-full" />
-          ) : (
-            <ButtonShareStream
-              userId="1"
-              accountId={selectedAccountId}
-              date={selectedDate}
-            />
-          )}
+        <div className="grid grid-cols-1 md:grid-cols-2 px-4 md:px-2 gap-4 mb-5">
+          <Card className="w-full p-2">
+            <CardContent className="p-1">
+              <Suspense fallback={<div>Loading Chart...</div>}>
+                <TransactionSummarySection
+                  dataTransactions={dataTransactions}
+                  totalAmount={totalAmount}
+                />
+              </Suspense>
+            </CardContent>
+          </Card>
+          <Card className="w-full">
+            <CardContent>
+              <h2 className="text-lg font-semibold mb-3">FORM TRANSACTION</h2>
+              {/* Konten lainnya */}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="px-4 md:px-2">
+          <Card className="w-full">
+            <CardContent>
+              <TransactionSection />
+            </CardContent>
+          </Card>
         </div>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 px-4 md:px-2 gap-4 mb-5">
-        <Card className="w-full">
-          <CardContent>
-            <Skeleton className="h-10 w-full" />
-            <div className="flex flex-col gap-6">
-              <h2>Welcome</h2>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="w-full">
-          <CardContent>
-            <Skeleton className="h-10 mb-2 w-full" />
-            <FormTransaction
-              accountId={selectedAccountId}
-              onSuccess={handleTransactionFormSuccess}
-            />
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="px-4 md:px-2">
-        <Card className="w-full">
-          <CardContent>
-            {loadingTransactions && <Skeleton className="h-50 w-full" />}
-
-            {!loadingTransactions && (
-              <TableTransactions
-                transactionData={transactionsData}
-                onDelete={handleDeleteTransaction}
-              />
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    </>
   );
 }
