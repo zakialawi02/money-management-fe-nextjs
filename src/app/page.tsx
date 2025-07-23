@@ -12,7 +12,7 @@ export default async function HomePage() {
   if (!success) {
     return (
       <div className="text-center mt-10 text-foreground">
-        {message}: Please try again!!
+        {message}: Please try again or Logout!!
       </div>
     );
   }

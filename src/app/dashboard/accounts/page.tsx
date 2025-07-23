@@ -10,7 +10,7 @@ export default async function AccountPage() {
   if (!success) {
     return (
       <div className="text-center mt-10 text-foreground">
-        {message}: Please try again!!
+        {message}: Please try again or Logout!!
       </div>
     );
   }

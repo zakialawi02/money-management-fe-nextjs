@@ -58,8 +58,6 @@ export default function EditAccountPage(props: {
   }, [id]);
 
   useEffect(() => {
-    console.log(state);
-
     if (state?.success === true) {
       toast.success("Account updated successfully");
       router.push("/dashboard");

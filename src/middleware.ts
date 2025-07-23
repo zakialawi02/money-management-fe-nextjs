@@ -29,7 +29,7 @@ export async function middleware(req: NextRequest) {
       return response;
     }
 
-    // Token valid → set tokenValid cookie (cache 10 menit)
+    // Token valid → set tokenValid cookie (cache 1 hours)
     const response = NextResponse.next();
     response.cookies.set("tokenValid", "true", { maxAge: 60 * 60 });
     return response;

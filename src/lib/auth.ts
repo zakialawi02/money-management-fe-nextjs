@@ -75,7 +75,7 @@ export async function loginAction(
     return {
       data,
       success: false,
-      message: "Network error occurred",
+      message: "Network error occurred, Server Error 500",
     };
   }
 }
@@ -155,7 +155,7 @@ export async function registerAction(
     return {
       data,
       success: false,
-      message: "Network error occurred",
+      message: "Network error occurred, Server Error 500",
     };
   }
 }

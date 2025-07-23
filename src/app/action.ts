@@ -24,7 +24,7 @@ export async function myUser() {
     return json;
   } catch (error) {
     console.error("myUser error:", error);
-    return { success: false, message: "An error occurred" };
+    return { success: false, message: "An error occurred, Server Error" };
   }
 }
 
@@ -67,7 +67,7 @@ export async function createAccountAction(prev: Account, formData: FormData) {
     return json;
   } catch (error) {
     console.error("createAccount error:", error);
-    return { data, success: false, message: "An error occurred" };
+    return { data, success: false, message: "An error occurred, Server Error" };
   }
 }
 
@@ -83,7 +83,6 @@ export async function deleteAccountAction(id: string) {
     const json = await res.json();
     if (!res.ok) {
       console.error("Failed to delete account:", res.statusText);
-      console.log(json);
       return {
         success: false,
         message: json.message || "Failed to delete account",
@@ -94,26 +93,13 @@ export async function deleteAccountAction(id: string) {
     return json;
   } catch (error) {
     console.error("deleteAccount error:", error);
-    return { success: false, message: "An error occurred" };
+    return { success: false, message: "An error occurred, Server Error" };
   }
 }
 
 export async function getAccounts() {
   try {
     const token = (await cookies()).get("authToken")?.value;
-    if (!token) {
-      console.warn("No auth token found");
-      return {
-        success: false,
-        message: "No auth token found",
-        data: [
-          {
-            redirect: "/login",
-          },
-        ],
-      };
-    }
-
     const response = await fetch(`${API_BASE_URL}/api/v1/accounts`, {
       method: "GET",
       headers: {
@@ -122,14 +108,17 @@ export async function getAccounts() {
       },
     });
     if (!response.ok) {
-      return { success: false, message: "An error occurred", data: [] };
+      return { success: false, message: "Failed to fetch accounts", data: [] };
     }
-
     const json = await response.json();
     return { success: true, data: json.data || [] };
   } catch (error) {
     console.error("getAccounts error:", error);
-    return { success: false, message: "An error occurred", data: [] };
+    return {
+      success: false,
+      message: "An error occurred, Server Error",
+      data: [],
+    };
   }
 }
 
@@ -167,7 +156,11 @@ export async function getAccount(accountId: string) {
     return { success: true, data: json.data || [] };
   } catch (error) {
     console.error("getAccounts error:", error);
-    return { success: false, message: "An error occurred", data: [] };
+    return {
+      success: false,
+      message: "An error occurred, Server Error",
+      data: [],
+    };
   }
 }
 
@@ -201,7 +194,7 @@ export async function updateAccountAction(prev: Account, formData: FormData) {
     return json;
   } catch (error) {
     console.error("updateAccount error:", error);
-    return { success: false, message: "An error occurred" };
+    return { success: false, message: "An error occurred, Server Error" };
   }
 }
 
@@ -224,7 +217,11 @@ export async function getTransactions(accountId: string, dateParam?: string) {
     return json;
   } catch (error) {
     console.error("getTransactions error:", error);
-    return { success: false, message: "An error occurred", data: [] };
+    return {
+      success: false,
+      message: "An error occurred, Server Error",
+      data: [],
+    };
   }
 }
 
@@ -247,7 +244,7 @@ export async function getTransactionCategories() {
     return json.data || [];
   } catch (error) {
     console.error("Error while fetching transaction categories:", error);
-    return { success: false, message: "An error occurred" };
+    return { success: false, message: "An error occurred, Server Error" };
   }
 }
 
@@ -291,7 +288,7 @@ export async function storeTransactionAction(
     return json;
   } catch (error) {
     console.error("Error while storing transaction:", error);
-    return { success: false, message: "An error occurred" };
+    return { success: false, message: "An error occurred, Server Error" };
   }
 }
 
@@ -318,7 +315,7 @@ export async function deleteTransactionAction(id: string) {
     return { success: true, data };
   } catch (error) {
     console.error("Error while deleting transaction:", error);
-    return { success: false, message: "An error occurred" };
+    return { success: false, message: "An error occurred, Server Error" };
   }
 }
 
@@ -354,6 +351,6 @@ export async function getShareStreamLink(
     return json;
   } catch (error) {
     console.error("Error while getting streams URL:", error);
-    return { success: false, message: "An error occurred" };
+    return { success: false, message: "An error occurred, Server Error" };
   }
 }
