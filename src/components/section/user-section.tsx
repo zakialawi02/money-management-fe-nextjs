@@ -8,41 +8,21 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { usePathname } from "next/navigation";
 import { Input } from "../ui/input";
-import { updateProfileAction } from "@/app/action";
-import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
 type Props = {
   user: UserData;
 };
 
-const initialState = {
-  data: {
-    name: "",
-    username: "",
-    email: "",
-    profile_photo_path: "",
-  },
-  message: "",
-  success: null,
-  errors: null,
+const submit = async (event: React.FormEvent) => {
+  event.preventDefault();
+
+  toast.error(`Failed to update profile`);
+  return false;
 };
 
 export default function ProfileSection({ user }: Props) {
   const pathname = usePathname();
-  const [state, formAction, pending] = useActionState(
-    updateProfileAction,
-    initialState
-  );
-
-  useEffect(() => {
-    if (state?.success) {
-      toast.success(`${state?.message}`);
-    }
-    if (state?.success === false) {
-      toast.error(`${state?.message}`);
-    }
-  }, [state]);
 
   if (pathname === "/dashboard") {
     return (
@@ -86,7 +66,7 @@ export default function ProfileSection({ user }: Props) {
     <>
       <div className="w-full max-w-[90rem] my-4 mx-auto">
         <form
-          action={formAction}
+          onSubmit={submit}
           className="m-1 p-1 md:p-3 bg-card rounded-md -mt-3"
         >
           <div className="mb-2">
@@ -132,13 +112,8 @@ export default function ProfileSection({ user }: Props) {
             />
           </div>
 
-          <Button
-            type="submit"
-            size={"sm"}
-            className="float-end"
-            disabled={pending}
-          >
-            {pending ? "Updating..." : "Update Profile"}
+          <Button type="submit" size={"sm"} className="float-end">
+            Update Profile{" "}
           </Button>
         </form>
       </div>
