@@ -44,7 +44,7 @@ export default function TableTransactions({
       <Table className="w-full">
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[150px]">Date</TableHead>
+            <TableHead className="w-[12rem] whitespace-nowrap">Date</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Amount</TableHead>
             <TableHead>Category</TableHead>
@@ -58,7 +58,7 @@ export default function TableTransactions({
                 className="bg-secondary-background text-foreground"
                 key={data?.id}
               >
-                <TableCell className="text-left">
+                <TableCell className="text-left whitespace-nowrap">
                   {formatDateSimple(data?.date)}
                 </TableCell>
                 <TableCell

@@ -61,7 +61,7 @@ export default function AccountListSection({ accounts }: Props) {
       </div>
       <TableAccountLists
         accountData={accounts}
-        onEdit={(id) => router.push(`/accounts/${id}`)}
+        onEdit={(id) => alert(id)}
         onDelete={handleDeleteAccount}
       />
 

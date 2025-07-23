@@ -127,7 +127,7 @@
 }
 
 .neo-calendar {
-  @apply !border-2 !border-black !bg-secondary-background !shadow-[3px_3px_0_#000] !font-mono;
+  @apply !border-2 !border-black !bg-secondary-background !shadow-[3px_3px_0_#000];
 }
 .neo-calendar .react-datepicker__header,
 .neo-calendar .react-datepicker__current-month,

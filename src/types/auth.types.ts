@@ -1,4 +1,5 @@
-export type InitialState<T = Record<string, string>> = {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export type InitialState<T = Record<string, any>> = {
   data?: T;
   message?: string;
   success: boolean | null;

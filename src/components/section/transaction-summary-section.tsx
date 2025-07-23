@@ -35,7 +35,7 @@ export default function TransactionSummarySection({
 
   return (
     <>
-      <div className="flex flex-col items-start justify-between gap-3 lg:flex-row font-mono">
+      <div className="flex flex-col items-start justify-between gap-3 lg:flex-row">
         <div className="space-y-1">
           <div className="items-center block space-x-1">
             <div className="mb-1">

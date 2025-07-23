@@ -144,6 +144,7 @@ export async function registerAction(
       };
     } else {
       return {
+        data,
         success: false,
         message: result.message || "Registration failed",
         errors: result.errors,
@@ -152,6 +153,7 @@ export async function registerAction(
   } catch (error) {
     console.error(error);
     return {
+      data,
       success: false,
       message: "Network error occurred",
     };

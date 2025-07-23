@@ -87,7 +87,7 @@ export default function AccountSection({ accounts }: Props) {
 
   return (
     <>
-      {selectedAccountId && (
+      {selectedAccountId ? (
         <>
           <DropdownAccount
             data={accounts}
@@ -96,15 +96,20 @@ export default function AccountSection({ accounts }: Props) {
             onClick={hanleNewAccount}
           />
           <div className="mt-3 flex justify-center">
-            {userId ? (
+            {userId && (
               <ButtonShareStream
                 userId={userId}
                 accountId={selectedAccountId}
                 date={selectedDate}
               />
-            ) : (
-              <Skeleton className="h-18 w-full my-1" />
             )}
+          </div>
+        </>
+      ) : (
+        <>
+          <Skeleton className="h-18 w-full" />
+          <div className="mt-1 flex justify-center">
+            <Skeleton className="h-8 w-1/2" />
           </div>
         </>
       )}

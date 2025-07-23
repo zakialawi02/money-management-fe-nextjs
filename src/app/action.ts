@@ -1,9 +1,48 @@
 "use server";
 
-import { Account, Transaction } from "@/types/auth.types";
+import { Account, Transaction, UserData } from "@/types/auth.types";
 import { cookies } from "next/headers";
 
 const API_BASE_URL = process.env.API_URL ?? "http://127.0.0.1:8000";
+
+export async function myUser() {
+  try {
+    const token = (await cookies()).get("authToken")?.value;
+    const res = await fetch(`${API_BASE_URL}/api/v1/user`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      console.error("Failed to fetch user:", res.statusText);
+      return {
+        success: false,
+        message: "Failed to fetch user",
+      };
+    }
+    return json;
+  } catch (error) {
+    console.error("myUser error:", error);
+    return { success: false, message: "An error occurred" };
+  }
+}
+
+// update profile endpoint not yet available
+export async function updateProfileAction(prev: UserData, formData: FormData) {
+  const data = {
+    name: formData.get("name") as string,
+    username: formData.get("username") as string,
+    email: formData.get("email") as string,
+    profile_photo_path: formData.get("profile_photo_path") as string,
+  };
+  // update profile endpoint not yet available
+  return {
+    data,
+    success: false,
+    message: "Failed to update profile",
+  };
+}
 
 export async function createAccountAction(prev: Account, formData: FormData) {
   try {
@@ -180,7 +219,7 @@ export async function storeTransactionAction(
       return {
         data,
         success: false,
-        message: json.message || "Login failed",
+        message: json.message || "Failed to store transaction",
         errors: json.errors,
       };
     }

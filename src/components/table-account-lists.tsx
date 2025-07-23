@@ -50,9 +50,13 @@ export default function TableAccountLists({
             <TableHead className="w-min-[150px]">id</TableHead>
             <TableHead className="w-min-[150px]">Name</TableHead>
             <TableHead className="w-min-[150px]">Balance</TableHead>
-            <TableHead className="w-min-[150px]">Description</TableHead>
-            <TableHead className="w-min-[150px]">Created At</TableHead>
-            <TableHead className="w-min-[150px]">Updated At</TableHead>
+            <TableHead className="w-min-[250px]">Description</TableHead>
+            <TableHead className="w-min-[150px] whitespace-nowrap">
+              Created At
+            </TableHead>
+            <TableHead className="w-min-[150px] whitespace-nowrap">
+              Updated At
+            </TableHead>
             <TableHead className="text-right w-min-[200px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -67,7 +71,9 @@ export default function TableAccountLists({
                   {data?.id?.slice(0, 7)}...
                 </TableCell>
                 <TableCell>{data?.name}</TableCell>
-                <TableCell>{formatCurrency(data?.balance)}</TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {formatCurrency(data?.balance)}
+                </TableCell>
                 <TableCell>{data?.description?.slice(0, 15)}...</TableCell>
                 <TableCell>
                   {data?.created_at

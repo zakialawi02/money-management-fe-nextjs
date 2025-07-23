@@ -37,7 +37,7 @@ export default function DropdownAccount({
   }, []);
 
   return (
-    <div ref={dropdownRef} className="relative w-full font-mono">
+    <div ref={dropdownRef} className="relative w-full">
       {/* Selected */}
       <div
         onClick={() => setOpen(!open)}
@@ -52,7 +52,7 @@ export default function DropdownAccount({
               </div>
             )}
           </div>
-          <div className="text-sm font-mono">
+          <div className="text-sm">
             {formatCurrency(selected?.balance ?? 0)}
           </div>
         </div>
@@ -82,9 +82,7 @@ export default function DropdownAccount({
                     </div>
                   )}
                 </div>
-                <div className="text-sm font-mono">
-                  {formatCurrency(acc.balance)}
-                </div>
+                <div className="text-sm">{formatCurrency(acc.balance)}</div>
               </div>
             </div>
           ))}
