@@ -1,5 +1,5 @@
-import ModalForm from "@/components/modal-form";
 import EditAccountPage from "../../../edit/[id]/page";
+import Modal from "@/components/modal";
 
 export default async function EditAccountModal({
   params,
@@ -7,8 +7,8 @@ export default async function EditAccountModal({
   params: { id: string };
 }) {
   return (
-    <ModalForm>
+    <Modal>
       <EditAccountPage params={params} />
-    </ModalForm>
+    </Modal>
   );
 }
