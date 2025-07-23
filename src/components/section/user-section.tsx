@@ -38,6 +38,10 @@ export default function ProfileSection({ user }: Props) {
             />
           </div>
           <div className="ml-2 mb-2">
+            <Label>ID</Label>
+            <p>{user?.id.slice(0, 10)}...</p>
+          </div>
+          <div className="ml-2 mb-2">
             <Label>Name</Label>
             <p>{user?.name}</p>
           </div>
@@ -77,6 +81,10 @@ export default function ProfileSection({ user }: Props) {
               height={100}
               className="rounded-full"
             />
+          </div>
+          <div className="ml-2 mb-2">
+            <Label>ID</Label>
+            <p>{user?.id.slice(0, 10)}...</p>
           </div>
           <div className="ml-2 mb-2">
             <Label>Name</Label>

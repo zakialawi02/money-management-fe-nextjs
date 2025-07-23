@@ -14,18 +14,14 @@ import { Button } from "./ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import DialogDelete from "./dialog-delete-confirmation";
 import { useState } from "react";
+import Link from "next/link";
 
 type Props = {
   accountData: Account[];
-  onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 };
 
-export default function TableAccountLists({
-  accountData,
-  onEdit,
-  onDelete,
-}: Props) {
+export default function TableAccountLists({ accountData, onDelete }: Props) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -87,15 +83,16 @@ export default function TableAccountLists({
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <Button
-                      size="icon-sm"
-                      variant="reverse"
-                      className="bg-foreground text-secondary-background"
-                      color="secondary"
-                      onClick={() => onEdit(data.id)}
-                    >
-                      <Pencil />
-                    </Button>
+                    <Link href={`/dashboard/accounts/edit/${data.id}`}>
+                      <Button
+                        size="icon-sm"
+                        variant="reverse"
+                        className="bg-foreground text-secondary-background"
+                        color="secondary"
+                      >
+                        <Pencil />
+                      </Button>
+                    </Link>
                     <Button
                       size="icon-sm"
                       variant="reverse"

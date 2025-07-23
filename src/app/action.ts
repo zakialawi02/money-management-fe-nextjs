@@ -99,7 +99,7 @@ export async function deleteAccountAction(id: string) {
   }
 }
 
-export async function getAccount() {
+export async function getAccounts() {
   try {
     const token = (await cookies()).get("authToken")?.value;
     if (!token) {
@@ -129,7 +129,45 @@ export async function getAccount() {
     const json = await response.json();
     return { success: true, data: json.data || [] };
   } catch (error) {
-    console.error("getAccount error:", error);
+    console.error("getAccounts error:", error);
+    return { success: false, message: "An error occurred", data: [] };
+  }
+}
+
+export async function getAccount(accountId: string) {
+  try {
+    const token = (await cookies()).get("authToken")?.value;
+    if (!token) {
+      console.warn("No auth token found");
+      return {
+        success: false,
+        message: "No auth token found",
+        data: [
+          {
+            redirect: "/login",
+          },
+        ],
+      };
+    }
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/v1/accounts/${accountId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      return { success: false, message: "An error occurred", data: [] };
+    }
+
+    const json = await response.json();
+    return { success: true, data: json.data || [] };
+  } catch (error) {
+    console.error("getAccounts error:", error);
     return { success: false, message: "An error occurred", data: [] };
   }
 }

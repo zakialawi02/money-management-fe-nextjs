@@ -14,14 +14,19 @@ export const metadata: Metadata = {
 
 export default function DashboardLayout({
   children,
+  modal,
 }: {
   children: React.ReactNode;
+  modal: React.ReactNode;
 }) {
   return (
     <>
       <NavbarDashboard />
       <div className="w-full mx-auto px-4 md:px-2 my-4">
-        <Suspense fallback={<Loading />}>{children}</Suspense>
+        <Suspense fallback={<Loading />}>
+          {children}
+          {modal}
+        </Suspense>
       </div>
     </>
   );
