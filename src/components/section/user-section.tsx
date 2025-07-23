@@ -16,8 +16,7 @@ type Props = {
 
 const submit = async (event: React.FormEvent) => {
   event.preventDefault();
-
-  toast.error(`Failed to update profile`);
+  toast.error(`Failed to update profile!! | endpoint not yet available`);
   return false;
 };
 

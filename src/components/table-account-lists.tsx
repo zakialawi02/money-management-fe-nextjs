@@ -70,7 +70,7 @@ export default function TableAccountLists({ accountData, onDelete }: Props) {
                 <TableCell className="whitespace-nowrap">
                   {formatCurrency(data?.balance)}
                 </TableCell>
-                <TableCell>{data?.description?.slice(0, 15)}...</TableCell>
+                <TableCell>{data?.description?.slice(0, 25)}...</TableCell>
                 <TableCell>
                   {data?.created_at
                     ? formatDateSimpleLong(data.created_at, "en-US")

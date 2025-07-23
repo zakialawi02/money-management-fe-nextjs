@@ -81,11 +81,11 @@ export default function FormTransaction({ accountId, onSuccess }: Props) {
   }, [type, allCategories]);
 
   useEffect(() => {
-    if (state.success === true) {
+    if (state?.success === true) {
       toast.success("Transaction successfully created");
       onSuccess?.();
-    } else if (state.success === false) {
-      toast.error(state.message || "Failed to create transaction");
+    } else if (state?.success === false) {
+      toast.error(state?.message || "Failed to create transaction");
     }
   }, [state, onSuccess]);
 

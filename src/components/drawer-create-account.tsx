@@ -43,7 +43,7 @@ export default function DrawerCreateAccount({
   );
 
   useEffect(() => {
-    if (state.success) {
+    if (state?.success) {
       onSuccess();
     }
   }, [state, onSuccess]);
@@ -66,7 +66,13 @@ export default function DrawerCreateAccount({
           </DrawerHeader>
           <form action={formAction}>
             <div className="space-y-2">
-              <Input type="text" name="name" placeholder="Name" required />
+              <Input
+                type="text"
+                name="name"
+                defaultValue={state?.data?.name}
+                placeholder="Name"
+                required
+              />
               {state?.errors?.name && (
                 <p className="text-error font-normal">{state.errors.name[0]}</p>
               )}
@@ -80,7 +86,12 @@ export default function DrawerCreateAccount({
                   {state.errors.balance[0]}
                 </p>
               )}
-              <Input type="text" name="description" placeholder="Description" />
+              <Input
+                type="text"
+                name="description"
+                defaultValue={state?.data?.description}
+                placeholder="Description"
+              />
               {state?.errors?.description && (
                 <p className="text-error font-normal">
                   {state.errors.description[0]}

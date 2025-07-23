@@ -38,12 +38,12 @@ export async function updateProfileAction() {
 }
 
 export async function createAccountAction(prev: Account, formData: FormData) {
+  const data = {
+    name: formData.get("name") as string,
+    description: formData.get("description") as string,
+    balance: formData.get("balance") as string,
+  };
   try {
-    const data = {
-      name: formData.get("name") as string,
-      description: formData.get("description") as string,
-      balance: formData.get("balance") as string,
-    };
     const token = (await cookies()).get("authToken")?.value;
     const res = await fetch(`${API_BASE_URL}/api/v1/accounts`, {
       method: "POST",
@@ -56,7 +56,6 @@ export async function createAccountAction(prev: Account, formData: FormData) {
     const json = await res.json();
     if (!res.ok) {
       console.error("Failed to create account:", res.statusText);
-      console.log(json);
       return {
         data,
         success: false,
@@ -68,7 +67,7 @@ export async function createAccountAction(prev: Account, formData: FormData) {
     return json;
   } catch (error) {
     console.error("createAccount error:", error);
-    return { success: false, message: "An error occurred" };
+    return { data, success: false, message: "An error occurred" };
   }
 }
 
@@ -169,6 +168,40 @@ export async function getAccount(accountId: string) {
   } catch (error) {
     console.error("getAccounts error:", error);
     return { success: false, message: "An error occurred", data: [] };
+  }
+}
+
+export async function updateAccountAction(prev: Account, formData: FormData) {
+  try {
+    const token = (await cookies()).get("authToken")?.value;
+    const data = {
+      id: formData.get("id") as string,
+      name: formData.get("name") as string,
+      description: formData.get("description") as string,
+    };
+
+    const res = await fetch(`${API_BASE_URL}/api/v1/accounts/${data.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      console.error("Failed to update account:", res.statusText);
+      return {
+        data,
+        success: false,
+        message: json.message || "Failed to update account",
+        errors: json.error,
+      };
+    }
+    return json;
+  } catch (error) {
+    console.error("updateAccount error:", error);
+    return { success: false, message: "An error occurred" };
   }
 }
 

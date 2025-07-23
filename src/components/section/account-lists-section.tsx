@@ -40,7 +40,7 @@ export default function AccountListSection({ accounts }: Props) {
   const handleDeleteAccount = async (id: string) => {
     try {
       const res = await deleteAccountAction(id);
-      if (res.success) {
+      if (res?.success) {
         toast.success("Account deleted successfully");
         router.refresh();
       } else {
@@ -61,7 +61,7 @@ export default function AccountListSection({ accounts }: Props) {
       </div>
       <TableAccountLists
         accountData={accounts}
-        onEdit={(id) => alert(id)}
+        // onEdit={(id) => alert(id)}
         onDelete={handleDeleteAccount}
       />
 

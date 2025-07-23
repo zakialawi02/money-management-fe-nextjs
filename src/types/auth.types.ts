@@ -54,7 +54,7 @@ export interface Account {
 export interface TransactionCategory {
   id: string;
   name: string;
-  description: string | null;
+  description: string;
   color?: string;
   created_at?: string;
   updated_at?: string;
