@@ -25,14 +25,9 @@ their transaction data.
 - **Framework**: [Next.js](https://nextjs.org/)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components**: [shadcn/ui] (https://ui.shadcn.com/),
-  [Radix UI](https://www.radix-ui.com/), [Vaul](https://vaul.emilkowal.ski/)
-  (for the drawer), and [Lucide React](https://lucide.dev/) (for icons).
-- **Form Management**: [React Hook Form](https://react-hook-form.com/) &
-  [Zod](https://zod.dev/)
-- **Data Visualization**:
-  [ECharts for React](https://github.com/hustcc/echarts-for-react)
-- **Notifications**: [Sonner](https://sonner.emilkowal.ski/)
+- **UI Components**: [neobrutalism](https://www.neobrutalism.dev/),[shadcn/ui] (https://ui.shadcn.com/), and [Lucide React](https://lucide.dev/) (for icons).
+- **Form Management**: [UseStateAction Nextjs]
+- **Data Visualization**: [ECharts for React](https://github.com/hustcc/echarts-for-react)
 
 ## 🚀 Getting Started
 
@@ -54,13 +49,13 @@ To run this project in your local environment, follow these steps.
 
 2.  **Install dependencies:**
 
-````bash
+```bash
     npm install
     # or
     yarn install
     # or
     pnpm install
-    ```
+```
 
 ### Environment Configuration
 
@@ -77,7 +72,7 @@ Run the following command to start the development server:
 npm run dev
 # or
 yarn dev
-````
+```
 
 Open http://localhost:3000 in your browser to see the results.
 
