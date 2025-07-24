@@ -357,8 +357,6 @@ export async function getShareStreamLink(
 
 export async function getStreamReport(encryptedUrl: string) {
   try {
-    console.log(encryptedUrl);
-
     const token = (await cookies()).get("authToken")?.value;
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/v1/stream-report/${encryptedUrl}`,
@@ -370,8 +368,6 @@ export async function getStreamReport(encryptedUrl: string) {
       }
     );
     const json = await res.json();
-    console.log(json);
-
     if (!res.ok) {
       return {
         success: false,

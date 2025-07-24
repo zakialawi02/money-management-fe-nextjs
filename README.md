@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🗃️ Money Management / Expense Tracker Application
 
-## Getting Started
+This is a frontend project for a Money Management Application or expense tracker
+built using [Next.js](https://nextjs.org/). This application allows users to
+track income and expenses, manage various financial accounts, and visualize
+their transaction data.
 
-First, run the development server:
+## 🚀 Key Features
+
+- **User Authentication**: A secure registration and login system for users.
+- **Pocket Account Management**: Users can create, view, edit, and delete
+  multiple financial accounts.
+- **Transaction Recording**: Easily record income and expenses, complete with
+  date, amount, description, and category.
+- **Data Visualization**: View transaction summaries in interactive pie charts,
+  grouped by type or category.
+- **Transaction Reports**:
+- Export monthly transaction summaries to PDF format.
+- Share transaction reports via a unique link (Stream Report).
+- **Light & Dark Themes**: Customizable interface with light or dark mode.
+- **Responsive Design**: User-friendly interface accessible on various devices.
+
+## 🛠️ Technology Used
+
+- **Framework**: [Next.js](https://nextjs.org/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [shadcn/ui] (https://ui.shadcn.com/),
+  [Radix UI](https://www.radix-ui.com/), [Vaul](https://vaul.emilkowal.ski/)
+  (for the drawer), and [Lucide React](https://lucide.dev/) (for icons).
+- **Form Management**: [React Hook Form](https://react-hook-form.com/) &
+  [Zod](https://zod.dev/)
+- **Data Visualization**:
+  [ECharts for React](https://github.com/hustcc/echarts-for-react)
+- **Notifications**: [Sonner](https://sonner.emilkowal.ski/)
+
+## 🚀 Getting Started
+
+To run this project in your local environment, follow these steps.
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/en/) (version 18.18.0 or higher is recommended)
+- A package manager such as `npm`, `yarn`, or `pnpm`
+
+### Installation
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone [https://github.com/zakialawi02/money-management-fe-nextjs.git](https://github.com/zakialawi02/money-management-fe-nextjs.git)
+    cd money-management-fe-nextjs
+    ```
+
+2.  **Install dependencies:**
+
+````bash
+    npm install
+    # or
+    yarn install
+    # or
+    pnpm install
+    ```
+
+### Environment Configuration
+
+This project requires a connection to the backend API. Create a `.env.local` file in the project root and add the following environment variables:
+`NEXT_PUBLIC_API_URL=http://127.0.0.1:8000`
+
+Replace the URL with your backend API address if it differs.
+
+### Running the Development Server
+
+Run the following command to start the development server:
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+````
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 in your browser to see the results.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## License
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file
+for details.
 
-## Learn More
+## Support and Donations
 
-To learn more about Next.js, take a look at the following resources:
+If you find this project useful and would like to support its further
+development, you can make a donation via the following platforms:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+https://ko-fi.com/zakialawi
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Every contribution you make is greatly appreciated. Thank you!

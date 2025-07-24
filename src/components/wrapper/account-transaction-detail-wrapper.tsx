@@ -91,11 +91,17 @@ export default function TransactionWrapper() {
         </Card>
       </div>
 
-      {loading && <Skeleton className="h-40 w-full" />}
+      {loading && (
+        <>
+          <div className="px-4 md:px-2 mb-5">
+            <Skeleton className="h-40 w-full" />
+          </div>
+        </>
+      )}
       {!loading && (
-        <div className="px-4 md:px-2">
+        <div className="px-4 md:px-2 mb-5">
           <Card className="w-full">
-            <CardContent>
+            <CardContent className="p-2">
               <TransactionSection
                 transactionData={transactions}
                 onDelete={handleDelete}

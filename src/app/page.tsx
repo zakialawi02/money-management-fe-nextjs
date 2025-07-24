@@ -27,7 +27,7 @@ export default async function HomePage() {
           </Suspense>
         </div>
 
-        <div className="px-4 md:px-2">
+        <div>
           <TransactionWrapper />
         </div>
       </div>

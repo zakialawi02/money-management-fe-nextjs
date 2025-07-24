@@ -5,13 +5,10 @@ import TableTransactions from "@/components/table-transactions";
 import { format } from "date-fns";
 import { formatCurrency } from "@/lib/utils";
 
-interface Props {
-  params: {
-    encryptedUrl: string;
-  };
-}
-
-export default async function StreamReportPage({ params }: Props) {
+export default async function StreamReportPage(props: {
+  params: Promise<{ encryptedUrl: string }>;
+}) {
+  const params = await props.params;
   const { encryptedUrl } = params;
 
   const response = await getStreamReport(encryptedUrl);
