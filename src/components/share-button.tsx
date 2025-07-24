@@ -13,7 +13,7 @@ const ShareButton = ({ userId, accountId, date }: Props) => {
     toast.info("Generating link, please wait...");
     try {
       const response = await fetch(
-        `${process.env.API_URL}/api/v1/get-streams-url`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/get-streams-url`,
         {
           method: "POST",
           headers: {

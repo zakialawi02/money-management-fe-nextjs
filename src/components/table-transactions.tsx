@@ -1,3 +1,5 @@
+"use client";
+
 import { Transaction } from "@/types/auth.types";
 import {
   Table,
@@ -16,7 +18,7 @@ import { useState } from "react";
 
 type Props = {
   transactionData: Transaction[];
-  onDelete: (id: string) => void;
+  onDelete?: (id: string) => void | Promise<void> | null;
 };
 
 export default function TableTransactions({
@@ -32,11 +34,11 @@ export default function TableTransactions({
   };
 
   const confirmDelete = () => {
-    if (selectedId) {
+    if (selectedId && onDelete) {
       onDelete(selectedId);
-      setOpenDialog(false);
-      setSelectedId(null);
     }
+    setOpenDialog(false);
+    setSelectedId(null);
   };
 
   return (
@@ -48,60 +50,65 @@ export default function TableTransactions({
             <TableHead>Type</TableHead>
             <TableHead>Amount</TableHead>
             <TableHead>Category</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            {onDelete && <TableHead className="text-right">Actions</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
           {transactionData?.length > 0 ? (
-            transactionData?.map((data) => (
+            transactionData.map((data) => (
               <TableRow
                 className="bg-secondary-background text-foreground"
-                key={data?.id}
+                key={data.id}
               >
                 <TableCell className="text-left whitespace-nowrap">
-                  {formatDateSimple(data?.date)}
+                  {formatDateSimple(data.date)}
                 </TableCell>
                 <TableCell
                   className={cn(
                     "capitalize",
-                    data?.type === "expense" ? "text-error" : "text-success"
+                    data.type === "expense" ? "text-error" : "text-success"
                   )}
                 >
-                  {data?.type}
+                  {data.type}
                 </TableCell>
                 <TableCell
                   className={cn(
-                    data?.type === "expense" ? "text-error" : "text-success"
+                    data.type === "expense" ? "text-error" : "text-success"
                   )}
                 >
-                  {data?.type === "expense"
-                    ? `- ${formatCurrency(data?.amount)}`
-                    : formatCurrency(data?.amount)}
+                  {data.type === "expense"
+                    ? `- ${formatCurrency(data.amount)}`
+                    : formatCurrency(data.amount)}
                 </TableCell>
                 <TableCell>
-                  {data?.category?.name && (
+                  {data.category?.name && (
                     <Badge
                       className="capitalize text-black dark:text-black text-inverse rounded-none border-black border-2"
-                      style={{ backgroundColor: data?.category?.color }}
+                      style={{ backgroundColor: data.category.color }}
                     >
-                      {data?.category?.name}
+                      {data.category.name}
                     </Badge>
                   )}
                 </TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    size="icon-sm"
-                    variant="reverse"
-                    onClick={() => handleDeleteClick(data.id)}
-                  >
-                    <Trash2 />
-                  </Button>
-                </TableCell>
+                {onDelete && (
+                  <TableCell className="text-right">
+                    <Button
+                      size="icon-sm"
+                      variant="reverse"
+                      onClick={() => handleDeleteClick(data.id)}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </TableCell>
+                )}
               </TableRow>
             ))
           ) : (
             <TableRow className="bg-secondary-background">
-              <TableCell colSpan={5} className="text-center text-foreground">
+              <TableCell
+                colSpan={onDelete ? 5 : 4}
+                className="text-center text-foreground"
+              >
                 No data available
               </TableCell>
             </TableRow>
@@ -109,12 +116,14 @@ export default function TableTransactions({
         </TableBody>
       </Table>
 
-      <DialogDelete
-        textConfirmation="Are you sure you want to delete this transaction?"
-        open={openDialog}
-        onCancel={() => setOpenDialog(false)}
-        onConfirm={confirmDelete}
-      />
+      {onDelete && (
+        <DialogDelete
+          textConfirmation="Are you sure you want to delete this transaction?"
+          open={openDialog}
+          onCancel={() => setOpenDialog(false)}
+          onConfirm={confirmDelete}
+        />
+      )}
     </>
   );
 }

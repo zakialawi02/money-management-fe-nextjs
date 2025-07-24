@@ -13,7 +13,7 @@ import FormTransaction from "../form-transaction";
 
 export default function TransactionWrapper() {
   const searchParams = useSearchParams();
-  const router = useRouter(); // 2. Dapatkan instance router
+  const router = useRouter();
   const accountId = searchParams.get("accountId");
   const date = searchParams.get("date") ?? getCurrentDate("month");
   const [loading, setLoading] = useState(true);
@@ -48,14 +48,14 @@ export default function TransactionWrapper() {
     try {
       const res = await deleteTransactionAction(id);
       if (res.success) {
-        toast.success("Transaksi berhasil dihapus");
+        toast.success("Transaction deleted successfully");
         await fetchData();
         router.refresh();
       } else {
-        toast.error("Gagal menghapus transaksi");
+        toast.error("Failed to delete transaction");
       }
     } catch {
-      toast.error("Terjadi kesalahan saat menghapus");
+      toast.error("An error occurred while deleting");
     } finally {
       setLoading(false);
     }
@@ -73,6 +73,7 @@ export default function TransactionWrapper() {
         <Card className="w-full p-2">
           <CardContent className="p-1">
             <TransactionSummarySection
+              accountId={accountId || ""}
               dataTransactions={transactions}
               totalAmount={summary}
               isLoading={loading}

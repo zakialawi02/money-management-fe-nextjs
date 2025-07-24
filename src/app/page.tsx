@@ -1,7 +1,7 @@
 import { getAccounts } from "./action";
 import AccountSection from "@/components/section/account-section";
 import { Skeleton } from "@/components/ui/skeleton";
-import TransactionWrapper from "@/components/wrapper/account-transaction-detail";
+import TransactionWrapper from "@/components/wrapper/account-transaction-detail-wrapper";
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";

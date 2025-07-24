@@ -3,7 +3,7 @@
 import { Account, Transaction } from "@/types/auth.types";
 import { cookies } from "next/headers";
 
-const API_BASE_URL = process.env.API_URL ?? "http://127.0.0.1:8000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
 
 export async function myUser() {
   try {
@@ -341,7 +341,7 @@ export async function getShareStreamLink(
 
     const json = await res.json();
     if (!res.ok) {
-      console.error("Failed to get streams URL:", res.statusText);
+      console.error("Failed to generate streams URL:", res.statusText);
       return {
         success: false,
         message: json.message || "Failed",
@@ -353,4 +353,72 @@ export async function getShareStreamLink(
     console.error("Error while getting streams URL:", error);
     return { success: false, message: "An error occurred, Server Error" };
   }
+}
+
+export async function getStreamReport(encryptedUrl: string) {
+  try {
+    console.log(encryptedUrl);
+
+    const token = (await cookies()).get("authToken")?.value;
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/stream-report/${encryptedUrl}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const json = await res.json();
+    console.log(json);
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: json.message || "Failed to get streams URL",
+      };
+    }
+    return json;
+  } catch (error) {
+    console.error("getTransactions error:", error);
+    return {
+      success: false,
+      message: "An error occurred, Server Error",
+      data: [],
+    };
+  }
+}
+
+export async function getDownloadUrl(
+  accountId: string,
+  date: string
+): Promise<string> {
+  const token = (await cookies()).get("authToken")?.value;
+  if (!token) {
+    throw new Error("No auth token found in cookies");
+  }
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/account/${accountId}/report/download?date=${date}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to get report");
+  }
+
+  // Simpan blob ke URL dan kirim ke client
+  const blob = await res.blob();
+  const buffer = await blob.arrayBuffer();
+
+  // Encode ke base64 agar bisa dibuka client-side
+  const base64 = Buffer.from(buffer).toString("base64");
+  const mimeType = res.headers.get("Content-Type") ?? "application/pdf";
+
+  return `data:${mimeType};base64,${base64}`;
 }

@@ -2,7 +2,7 @@ import { getTransactionCategories, storeTransactionAction } from "@/app/action";
 import SelectCategoryTransaction from "./select-category-transaction";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { SaveIcon } from "lucide-react";
 import {
@@ -49,6 +49,7 @@ export default function FormTransaction({ accountId, onSuccess }: Props) {
     storeTransactionAction,
     initialState
   );
+  const processedStateRef = useRef(false);
 
   // Fetch all categories once
   useEffect(() => {
@@ -81,11 +82,14 @@ export default function FormTransaction({ accountId, onSuccess }: Props) {
   }, [type, allCategories]);
 
   useEffect(() => {
-    if (state?.success === true) {
-      toast.success("Transaction successfully created");
-      onSuccess?.();
-    } else if (state?.success === false) {
-      toast.error(state?.message || "Failed to create transaction");
+    if (state?.success !== null && !processedStateRef.current) {
+      if (state?.success === true) {
+        toast.success("Transaction successfully created");
+        onSuccess?.();
+      } else if (state?.success === false) {
+        toast.error(state?.message || "Failed to create transaction");
+      }
+      processedStateRef.current = true;
     }
   }, [state, onSuccess]);
 
@@ -103,7 +107,12 @@ export default function FormTransaction({ accountId, onSuccess }: Props) {
       )}
 
       {!loading && (
-        <form action={formAction}>
+        <form
+          action={(formData) => {
+            processedStateRef.current = false;
+            formAction(formData);
+          }}
+        >
           <input type="hidden" name="account_id" value={accountId} />
           <div className="grid w-full items-center gap-1.5 mb-3">
             <Label htmlFor="date">Date</Label>

@@ -1,6 +1,6 @@
 "use client";
 
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getCurrentDate } from "@/lib/utils";
 import { Transaction } from "@/types/auth.types";
 import PieChart from "../pie-chart";
 import { useState } from "react";
@@ -8,6 +8,9 @@ import { Switch } from "../ui/switch";
 import { Button } from "../ui/button";
 import DatePickerSelect from "../date-picker";
 import { Skeleton } from "../ui/skeleton";
+import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { getDownloadUrl } from "@/app/action";
 
 type TotalAmount = {
   weekly_expense: number;
@@ -17,20 +20,43 @@ type TotalAmount = {
 type ChartMode = "type" | "category";
 
 type Props = {
+  accountId: string;
   dataTransactions: Transaction[];
   totalAmount: TotalAmount;
   isLoading?: boolean;
 };
 
 export default function TransactionSummarySection({
+  accountId,
   dataTransactions,
   totalAmount,
   isLoading,
 }: Props) {
+  const searchParams = useSearchParams();
+  const dateParams = searchParams.get("date") || getCurrentDate("month");
   const [chartMode, setChartMode] = useState<ChartMode>("category");
 
   const handleToggle = () => {
     setChartMode((prev) => (prev === "category" ? "type" : "category"));
+  };
+
+  const handleExport = async () => {
+    try {
+      toast.info("Exporting PDF...");
+      const downloadUrl = await getDownloadUrl(accountId, dateParams);
+
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `report_${accountId}_${dateParams}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success("Download started");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to export PDF");
+    }
   };
 
   return (
@@ -57,7 +83,7 @@ export default function TransactionSummarySection({
                   />
                   <span>Summary</span>
                 </div>
-                <Button size={"sm"} variant={"reverse"}>
+                <Button size={"sm"} variant={"reverse"} onClick={handleExport}>
                   Export
                 </Button>
               </>
