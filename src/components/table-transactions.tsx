@@ -50,6 +50,7 @@ export default function TableTransactions({
             <TableHead>Type</TableHead>
             <TableHead>Amount</TableHead>
             <TableHead>Category</TableHead>
+            <TableHead>Description</TableHead>
             {onDelete && <TableHead className="text-right">Actions</TableHead>}
           </TableRow>
         </TableHeader>
@@ -73,6 +74,7 @@ export default function TableTransactions({
                 </TableCell>
                 <TableCell
                   className={cn(
+                    "whitespace-nowrap",
                     data.type === "expense" ? "text-error" : "text-success"
                   )}
                 >
@@ -90,6 +92,13 @@ export default function TableTransactions({
                     </Badge>
                   )}
                 </TableCell>
+                <TableCell>
+                  {data.description
+                    ? data.description.length > 25
+                      ? `${data.description.substring(0, 25)}...`
+                      : data.description
+                    : "-"}
+                </TableCell>
                 {onDelete && (
                   <TableCell className="text-right">
                     <Button
@@ -106,7 +115,7 @@ export default function TableTransactions({
           ) : (
             <TableRow className="bg-secondary-background">
               <TableCell
-                colSpan={onDelete ? 5 : 4}
+                colSpan={onDelete ? 6 : 5}
                 className="text-center text-foreground"
               >
                 No data available

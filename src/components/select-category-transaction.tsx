@@ -60,9 +60,14 @@ export default function SelectCategoryTransaction({
                 {categories?.map((category) => (
                   <CommandItem
                     key={category.id}
-                    value={category.id}
+                    value={category.name}
                     onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue);
+                      // Find the category by name to get its ID
+                      const selectedCategory = categories.find(
+                        (cat) => cat.name === currentValue
+                      );
+                      const selectedId = selectedCategory?.id || "";
+                      setValue(selectedId === value ? "" : selectedId);
                       setOpen(false);
                     }}
                     className="w-full hover:border-2 hover:border-border focus-visible:border-2 focus-visible:border-border"

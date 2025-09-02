@@ -38,25 +38,33 @@ export default async function StreamReportPage(props: {
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
           <Card>
             <CardContent>
-              <h3>User Detail</h3>
-              <p>Expense: {user?.name}</p>
-              <p>Income: {user?.email}</p>
+              <h3 className="text-lg font-semibold mb-3">User Detail</h3>
+              <p className="text-sm">Name: {user?.name}</p>
+              <p className="text-sm">Email: {user?.email}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent>
-              <h3>Account Detail</h3>
-              <p>Name: {account?.name}</p>
-              <p>Description: {account?.description}</p>
-              <p>Balance: {formatCurrency(account?.balance)}</p>
+              <h3 className="text-lg font-semibold mb-3">Account Detail</h3>
+              <p className="text-sm">Name: {account?.name}</p>
+              <p className="text-sm">Description: {account?.description}</p>
+              <p className="text-sm">
+                Balance: {formatCurrency(account?.balance)}
+              </p>
             </CardContent>
           </Card>
           <Card>
             <CardContent>
-              <h3>Total Amount</h3>
-              <p>Expense: {total_amount?.expense}</p>
-              <p>Income: {total_amount?.income}</p>
-              <p>Total: {total_amount?.total}</p>
+              <h3 className="text-lg font-semibold mb-3">Total Amount</h3>
+              <p className="text-sm">
+                Expense: {formatCurrency(total_amount?.expense)}
+              </p>
+              <p className="text-sm">
+                Income: {formatCurrency(total_amount?.income)}
+              </p>
+              <p className="text-sm font-medium">
+                Total: {formatCurrency(total_amount?.total)}
+              </p>
             </CardContent>
           </Card>
         </div>
